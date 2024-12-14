@@ -13,8 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+model user {
+  id          Int      @id @default(autoincrement())
+  displayName String?  @db.VarChar(255)
+  username    String   @unique @db.VarChar(255)
+  email       String   @unique @db.VarChar(255)
+  password    String   @db.VarChar(255)
+  joinedAt    DateTime @default(now())
 }
