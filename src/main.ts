@@ -6,7 +6,6 @@ async function startServer() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
-  app.setGlobalPrefix('api');
   app.enableCors();
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
