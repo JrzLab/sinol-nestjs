@@ -2,7 +2,7 @@ import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/commo
 import { SignInService } from './sign-in.service';
 import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { LoginDto } from 'src/dto/login-dto';
-import { ILogin } from 'src/interfaces/interface-auth';
+import { ILogin } from 'src/utility/interfaces/interface-auth';
 
 @ApiTags('Auth')
 @Controller('auth/sign-in')
