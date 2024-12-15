@@ -1,6 +1,6 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { SignUpService } from './sign-up.service';
-import { IRegister } from 'src/interfaces/interface-auth';
+import { IRegister } from 'src/utility/interfaces/interface-auth';
 import { ApiTags, ApiResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { RegisterDto } from 'src/dto/register-dto';
 

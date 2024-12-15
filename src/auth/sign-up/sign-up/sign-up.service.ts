@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { IRegister } from 'src/interfaces/interface-auth';
+import { IRegister } from 'src/utility/interfaces/interface-auth';
 import { UserService } from 'src/prisma/user/user.service';
+import { compareText, hashText } from 'src/utility/function/function-auth';
 
 @Injectable()
 export class SignUpService {
@@ -26,7 +27,8 @@ export class SignUpService {
     }
 
     try {
-      const userData = await this.userService.create({ email, password, username });
+      const hashPassword = await hashText(password);
+      const userData = await this.userService.create({ email, password: hashPassword, username });
       return {
         success: true,
         message: 'User created successfully',
