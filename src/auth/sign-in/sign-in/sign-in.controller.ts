@@ -19,36 +19,36 @@ export class SignInController {
         const { email, username, password } = body;
 
         if (!password || (!email && !username)) {
-            throw new HttpException(
-                {
-                    code: HttpStatus.BAD_REQUEST,
-                    status: false,
-                    message: 'Email, Username and Password are required',
-                    data: {},
-                },
-                HttpStatus.BAD_REQUEST,
-            );
+        throw new HttpException(
+            {
+            code: HttpStatus.BAD_REQUEST,
+            status: false,
+            message: 'Email, Username and Password are required',
+            data: {},
+            },
+            HttpStatus.BAD_REQUEST,
+        );
         }
 
         const result = await this.signInService.loginUsers(body);
 
         if (result.success) {
-            return {
-                code: HttpStatus.OK,
-                status: true,
-                message: result.message,
-                data: result.data,
-            };
+        return {
+            code: HttpStatus.OK,
+            status: true,
+            message: result.message,
+            data: result.data,
+        };
         } else {
-            throw new HttpException(
-                {
-                    code: result.success ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,
-                    status: false,
-                    message: result.message,
-                    data: {},
-                },
-                result.success ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,
-            );
+        throw new HttpException(
+            {
+            code: result.success ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,
+            status: false,
+            message: result.message,
+            data: {},
+            },
+            result.success ? HttpStatus.OK : HttpStatus.UNAUTHORIZED,
+        );
         }
     }
 }
