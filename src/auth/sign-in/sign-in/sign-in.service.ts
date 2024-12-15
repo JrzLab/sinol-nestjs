@@ -17,9 +17,8 @@ export class SignInService {
       };
     }
 
-    const identifier = email || username;
-    const user = await this.userService.findUserByIdentifier(identifier);
-    if (!user) {
+    const userData = await this.userService.findUserByIdentifier({ email, username });
+    if (!userData.length) {
       return {
         success: false,
         message: 'User not found',
@@ -27,6 +26,7 @@ export class SignInService {
       };
     }
 
+    const user = userData[0];
     const passwordMatch = await compareText(password, user.password);
     if (!passwordMatch) {
       return {

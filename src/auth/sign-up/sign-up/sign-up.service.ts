@@ -10,7 +10,7 @@ export class SignUpService {
   async createUser(body: IRegister) {
     const { email, password, username } = body;
 
-    const userExists = await this.userService.findUserData({ email, username });
+    const userExists = await this.userService.findUserByIdentifier({ email, username });
     if (userExists.length) {
       const usernameExists = userExists.some((user) => user.username.toLowerCase() === username.toLowerCase());
       const emailExists = userExists.some((user) => user.email.toLowerCase() === email.toLowerCase());
