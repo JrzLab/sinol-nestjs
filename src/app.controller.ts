@@ -23,7 +23,7 @@ export class AppController {
   @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
   async getUserData(@Param() params: { id: string }) {
     const { id } = params;
-    return this.userService.findUserData({ id: Number(id) });
+    return this.userService.findUserByIdentifier({ id: Number(id) });
   }
   
   @Get('users')
