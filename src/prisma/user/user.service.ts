@@ -14,11 +14,26 @@ export class UserService {
     });
   }
 
+  async findUserByIdentifier(identifier: string) {
+    return await this.prismaService.user.findFirst({
+        where: {
+            OR: [
+                { email: identifier },
+                { username: identifier },
+            ],
+        },
+    });
+  }
+
   async findUsersData() {
     return this.prismaService.user.findMany();
   }
 
   async create(data: { email: string; password: string; username: string }) {
-    return this.prismaService.user.create({ data: { ...data, displayName: data.email.split('@')[0] } });
+    return this.prismaService.user.create({ data: { ...data, displayName: data.email.split('@')[0] }});
+  }
+
+  async comparePassword(password: string, hashedPassword: string) {
+    return password === hashedPassword;
   }
 }

@@ -1,11 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './prisma/user/user.service';
+import { ApiTags, ApiResponse, ApiParam, ApiOperation } from '@nestjs/swagger';
 
-interface IParams {
-  id: string;
-}
-
+@ApiTags('Get Users')
 @Controller()
 export class AppController {
   constructor(
@@ -14,18 +12,22 @@ export class AppController {
   ) {}
 
   @Get()
-  getHello(): string {
+  @ApiOperation({ summary: 'Get Hello World' })
+  getHello() {
     return this.appService.getHello();
   }
-
+  
   @Get('user/:id')
-  async getUserData(@Param() params: IParams) {
+  @ApiOperation({ summary: 'Get user data by params ID' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
+  async getUserData(@Param() params: { id: string }) {
     const { id } = params;
-
     return this.userService.findUserData({ id: Number(id) });
   }
-
+  
   @Get('users')
+  @ApiOperation({ summary: 'Get all users' })
   async getUsersData() {
     return this.userService.findUsersData();
   }
