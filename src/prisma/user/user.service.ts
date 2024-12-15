@@ -15,7 +15,7 @@ export class UserService {
   }
 
   async findUserByIdentifier(identifier: string) {
-    return await this.prismaService.user.findFirst({
+    return this.prismaService.user.findFirst({
         where: {
             OR: [
                 { email: identifier },
