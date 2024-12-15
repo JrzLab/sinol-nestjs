@@ -4,6 +4,5 @@ import { SignUpModule } from './sign-up/sign-up.module';
 
 @Module({
   imports: [SignInModule, SignUpModule],
-  exports: [SignInModule, SignUpModule],
 })
 export class AuthModule {}
