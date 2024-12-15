@@ -32,8 +32,4 @@ export class UserService {
   async create(data: { email: string; password: string; username: string }) {
     return this.prismaService.user.create({ data: { ...data, displayName: data.email.split('@')[0] }});
   }
-
-  async comparePassword(password: string, hashedPassword: string) {
-    return password === hashedPassword;
-  }
 }
