@@ -19,5 +19,6 @@ model user {
   username    String   @unique @db.VarChar(255)
   email       String   @unique @db.VarChar(255)
   password    String   @db.VarChar(255)
+  tokenReset  String?  @db.VarChar(285)
   joinedAt    DateTime @default(now()) // Automatically set the current date and time when a new record is created
 }
