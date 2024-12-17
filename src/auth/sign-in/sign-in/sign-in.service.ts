@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/prisma/user/user.service';
-import { compareText } from 'src/utility/function/function-auth';
 import { ILogin } from 'src/utility/interfaces/interface-auth';
 
 @Injectable()
 export class SignInService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   async loginUsers(body: ILogin) {
     const { username, email, password } = body;
@@ -27,7 +30,7 @@ export class SignInService {
     }
 
     const user = userData[0];
-    const passwordMatch = await compareText(password, user.password);
+    const passwordMatch = await this.authService.compareHashText(password, user.password);
     if (!passwordMatch) {
       return {
         success: false,

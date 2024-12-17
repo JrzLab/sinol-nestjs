@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { IRegister } from 'src/utility/interfaces/interface-auth';
 import { UserService } from 'src/prisma/user/user.service';
-import { compareText, hashText } from 'src/utility/function/function-auth';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class SignUpService {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService, private readonly authService: AuthService) {}
 
   async createUser(body: IRegister) {
     const { email, password, username } = body;
@@ -27,7 +27,7 @@ export class SignUpService {
     }
 
     try {
-      const hashPassword = await hashText(password);
+      const hashPassword = await this.authService.hashText(password);
       const userData = await this.userService.create({ email, password: hashPassword, username });
       return {
         success: true,
