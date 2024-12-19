@@ -16,7 +16,7 @@ export class AppController {
   getHello() {
     return this.appService.getHello();
   }
-  
+
   @Get('user/:id')
   @ApiOperation({ summary: 'Get user data by params ID' })
   @ApiParam({ name: 'id', type: String })
@@ -25,7 +25,7 @@ export class AppController {
     const { id } = params;
     return this.userService.findUserByIdentifier({ id: Number(id) });
   }
-  
+
   @Get('users')
   @ApiOperation({ summary: 'Get all users' })
   async getUsersData() {

@@ -13,17 +13,17 @@ export class SignInController {
   @ApiOperation({ summary: 'Login user' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({ status: HttpStatus.OK, description: 'Login Successfully' })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Email, Username and Password are required' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Email and Password are required' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User not found or invalid password' })
   async loginUser(@Body() body: ILogin) {
-    const { email, username, password } = body;
+    const { email, password } = body;
 
-    if (!password || (!email && !username)) {
+    if (!password || !email) {
       throw new HttpException(
         {
           code: HttpStatus.BAD_REQUEST,
           status: false,
-          message: 'Email, Username and Password are required',
+          message: 'Email and Password are required',
           data: {},
         },
         HttpStatus.BAD_REQUEST,

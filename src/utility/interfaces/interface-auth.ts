@@ -1,13 +1,10 @@
-export interface IRegister {
-  username: string;
+export interface ILogin {
   email: string;
   password: string;
 }
 
-export interface ILogin {
-  username?: string;
-  email?: string;
-  password: string;
+export interface IRegister extends ILogin {
+  firstName: string;
 }
 
 export interface IResetPassword {
@@ -31,8 +28,8 @@ export interface IUserData {
   email: string;
   password: string;
   id: number;
-  displayName: string | null;
-  username: string;
+  firstName: string;
+  lastName: string | null;
   tokenReset: string | null;
-  joinedAt: Date;
-};
+  createdAt: Date;
+}

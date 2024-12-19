@@ -11,16 +11,16 @@ export class SignInService {
   ) {}
 
   async loginUsers(body: ILogin) {
-    const { username, email, password } = body;
-    if (!password || (!email && !username)) {
+    const { email, password } = body;
+    if (!password || !email) {
       return {
         success: false,
-        message: 'Email, Username and Password are required',
+        message: 'Email and Password are required',
         data: {},
       };
     }
 
-    const userData = await this.userService.findUserByIdentifier({ email, username });
+    const userData = await this.userService.findUserByIdentifier({ email });
     if (!userData.length) {
       return {
         success: false,
@@ -43,9 +43,9 @@ export class SignInService {
       success: true,
       message: 'Login Successfully',
       data: {
-        displayName: user.displayName,
+        firstName: user.firstName,
         email: user.email,
-        joinedAt: user.joinedAt,
+        joinedAt: user.createdAt,
       },
     };
   }

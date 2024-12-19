@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
   getHello() {
     return {
-      message: "Welcome To Sinol API"
+      message: 'Welcome To Sinol API',
     };
   }
 }

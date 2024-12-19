@@ -15,15 +15,15 @@ export class SignUpController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'User created successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'User creation failed because already exists' })
   async createUser(@Body() body: IRegister) {
-    const { email, password, username } = body;
+    const { email, password, firstName } = body;
 
-    if (!email || !password || !username) {
+    if (!email || !password || !firstName) {
       throw new HttpException(
         {
           code: HttpStatus.BAD_REQUEST,
           status: false,
-          message: 'Username, Email, and Password are required',
-          data: {},           
+          message: 'firstName, Email, and Password are required',
+          data: {},
         },
         HttpStatus.BAD_REQUEST,
       );

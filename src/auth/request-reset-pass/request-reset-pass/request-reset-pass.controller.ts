@@ -30,7 +30,7 @@ export class RequestResetPassController {
       );
     }
 
-    const jwtToken = await this.jwtService.signAsync({ email: this.authService.encodeData(email) })
+    const jwtToken = await this.jwtService.signAsync({ email: this.authService.encodeData(email) });
     this.requestResetPasswordService.sendEmail(userData, jwtToken);
     throw new HttpException(
       {

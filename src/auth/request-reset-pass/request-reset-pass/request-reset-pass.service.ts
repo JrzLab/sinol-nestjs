@@ -16,7 +16,7 @@ export class RequestResetPassService {
 
     let htmlContent = fs.readFileSync('./view/resetPassword.html', 'utf-8');
     htmlContent = htmlContent
-      .replace(/{{name}}/g, `${userData.displayName}`)
+      .replace(/{{name}}/g, `${userData.firstName} ${userData.lastName}`)
       .replace(/\[Product Name\]/g, 'Sinol')
       .replace(/\{{action_url}}/g, 'https://google.com/');
 

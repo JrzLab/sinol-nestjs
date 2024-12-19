@@ -5,11 +5,11 @@ import { PrismaService } from '../prisma.service';
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findUserByIdentifier(where: { id?: number; username?: string; email?: string }) {
-    const { email, username, id } = where;
+  async findUserByIdentifier(where: { id?: number; firstName?: string; email?: string }) {
+    const { email, firstName, id } = where;
     return this.prismaService.user.findMany({
       where: {
-        OR: [id ? { id } : undefined, email ? { email } : undefined, username ? { username } : undefined].filter(Boolean),
+        OR: [id ? { id } : undefined, email ? { email } : undefined, firstName ? { firstName } : undefined].filter(Boolean),
       },
     });
   }
@@ -18,8 +18,8 @@ export class UserService {
     return this.prismaService.user.findMany();
   }
 
-  async create(data: { email: string; password: string; username: string }) {
-    return this.prismaService.user.create({ data: { ...data, displayName: data.email.split('@')[0] } });
+  async create(data: { email: string; password: string; firstName: string }) {
+    return this.prismaService.user.create({ data });
   }
 
   async changePassword(where: { email: string }, data: { password: string }) {

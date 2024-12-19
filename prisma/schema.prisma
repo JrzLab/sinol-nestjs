@@ -14,11 +14,30 @@ datasource db {
 }
 
 model user {
-  id          Int      @id @default(autoincrement()) // Automatically increment the value when a new record is created
-  displayName String?  @db.VarChar(255)
-  username    String   @unique @db.VarChar(255)
-  email       String   @unique @db.VarChar(255)
-  password    String   @db.VarChar(255)
-  tokenReset  String?  @db.VarChar(285)
-  joinedAt    DateTime @default(now()) // Automatically set the current date and time when a new record is created
+  id         Int           @id @default(autoincrement()) // Automatically increment the value when a new record is created
+  firstName  String        @db.VarChar(255)
+  lastName   String?       @db.VarChar(255)
+  email      String        @unique @db.VarChar(255)
+  password   String        @db.VarChar(255)
+  tokenReset String?       @db.VarChar(285)
+  createdAt  DateTime      @default(now()) // Automatically set the current date and time when a new record is created
+  message    messageData[]
+}
+
+model roomChat {
+  id        Int           @id @default(autoincrement())
+  roomId    String        @unique @db.VarChar(255)
+  createdAt DateTime      @default(now())
+  expiredAt DateTime
+  messages  messageData[]
+}
+
+model messageData {
+  uid         String   @id @default(uuid())
+  room        roomChat @relation(fields: [roomId], references: [id])
+  roomId      Int
+  sender      user     @relation(fields: [senderId], references: [id])
+  senderId    Int
+  content     String   @db.Text()
+  messageTamp DateTime @default(now())
 }
