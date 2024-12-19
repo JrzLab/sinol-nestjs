@@ -8,6 +8,7 @@ import { RequestResetPassModule } from './request-reset-pass/request-reset-pass.
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './jwtConstans';
+import { LogoutModule } from './logout/logout.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { jwtConstants } from './jwtConstans';
     }),
     SignInModule,
     SignUpModule,
+    LogoutModule,
     ResetPasswordModule,
     RequestResetPassModule,
   ],
