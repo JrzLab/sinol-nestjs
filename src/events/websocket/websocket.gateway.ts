@@ -32,9 +32,4 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
       }
     });
   }
-
-  @SubscribeMessage('message')
-  handleMessage(@MessageBody() data: string) {
-    console.log(`Received message: ${data}`);
-  }
 }
