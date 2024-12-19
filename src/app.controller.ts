@@ -19,7 +19,7 @@ export class AppController {
 
   @Get('user/:id')
   @ApiOperation({ summary: 'Get user data by params ID' })
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
   @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
   async getUserData(@Param() params: { id: string }) {
     const { id } = params;
@@ -28,6 +28,7 @@ export class AppController {
 
   @Get('users')
   @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'Users data retrieved successfully' })
   async getUsersData() {
     return this.userService.findUsersData();
   }
