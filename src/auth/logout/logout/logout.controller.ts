@@ -3,6 +3,4 @@ import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
 @Controller('auth/logout')
-export class LogoutController {
-    
-}
+export class LogoutController {}

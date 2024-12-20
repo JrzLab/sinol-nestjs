@@ -6,6 +6,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 @Module({
   imports: [PrismaModule],
   controllers: [LogoutController],
-  providers: [LogoutService]
+  providers: [LogoutService],
 })
 export class LogoutModule {}

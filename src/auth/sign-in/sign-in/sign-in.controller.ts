@@ -7,7 +7,7 @@ import { ILogin } from 'src/utility/interfaces/interface-auth';
 @ApiTags('Auth')
 @Controller('auth/sign-in')
 export class SignInController {
-    constructor(private readonly signInService: SignInService) {}
+  constructor(private readonly signInService: SignInService) {}
 
   @Post()
   @ApiOperation({ summary: 'Login user' })

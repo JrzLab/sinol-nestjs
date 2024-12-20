@@ -1,13 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import {
-  WebSocketGateway,
-  WebSocketServer,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  ConnectedSocket,
-  SubscribeMessage,
-  MessageBody,
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, ConnectedSocket } from '@nestjs/websockets';
 
 @WebSocketGateway(Number(process.env.PORT_WS), { cors: true })
 export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {

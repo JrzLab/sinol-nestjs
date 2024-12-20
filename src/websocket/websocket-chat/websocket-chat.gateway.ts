@@ -10,7 +10,6 @@ import {
 } from '@nestjs/websockets';
 import { IMessage, IChatRoom, IParticipant } from 'src/utility/interfaces/interface-websocket';
 
-
 @WebSocketGateway(Number(process.env.PORT_WS) || 3001, { cors: true })
 export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
@@ -19,9 +18,7 @@ export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisco
   private userStatus: Map<string, { isOnline: boolean; lastSeen: number }> = new Map();
 
   handleConnection(@ConnectedSocket() socket: Socket) {
-    const clientId = Array.isArray(socket.handshake.query.clientId)
-      ? socket.handshake.query.clientId[0]
-      : socket.handshake.query.clientId;
+    const clientId = Array.isArray(socket.handshake.query.clientId) ? socket.handshake.query.clientId[0] : socket.handshake.query.clientId;
     if (clientId) {
       this.clientsCollection.set(clientId, socket);
       this.userStatus.set(clientId, { isOnline: true, lastSeen: Date.now() });
@@ -62,10 +59,7 @@ export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisco
   }
 
   @SubscribeMessage('startPrivateChat')
-  startPrivateChat(
-    @MessageBody() data: { userId: string; otherUserId: string },
-    @ConnectedSocket() socket: Socket,
-  ) {
+  startPrivateChat(@MessageBody() data: { userId: string; otherUserId: string }, @ConnectedSocket() socket: Socket) {
     const { userId, otherUserId } = data;
     const roomId = this.generateRoomId(userId, otherUserId);
 
@@ -75,7 +69,7 @@ export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisco
         participants: [],
         messages: [],
         roomCreatedAt: Date.now(),
-        roomExpiredAt: Date.now() + 24 * 60 * 60 * 1000, 
+        roomExpiredAt: Date.now() + 24 * 60 * 60 * 1000,
         lastActivity: Date.now(),
       });
     }
@@ -99,7 +93,7 @@ export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisco
       room.participants.push({
         socketId: otherSocket.id,
         userId: otherUserId,
-        displayName: otherUserId, 
+        displayName: otherUserId,
         role: 'member',
         lastSeen: otherUserStatus?.lastSeen || Date.now(),
         isOnline: otherUserStatus?.isOnline || false,
@@ -121,10 +115,7 @@ export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisco
   }
 
   @SubscribeMessage('sendMessage')
-  sendMessage(
-    @MessageBody() data: { roomId: string; userId: string; message: string },
-    @ConnectedSocket() socket: Socket,
-  ) {
+  sendMessage(@MessageBody() data: { roomId: string; userId: string; message: string }, @ConnectedSocket() socket: Socket) {
     const { roomId, userId, message } = data;
     const room = this.roomsCollection.get(roomId);
 
@@ -143,7 +134,7 @@ export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisco
 
       this.server.to(roomId).emit('receiveMessage', newMessage);
 
-      room.participants.forEach(participant => {
+      room.participants.forEach((participant) => {
         if (participant.userId !== userId && participant.isOnline) {
           this.server.to(participant.socketId).emit('messageDelivered', {
             messageId: newMessage.messageId,
@@ -157,15 +148,12 @@ export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisco
   }
 
   @SubscribeMessage('messageRead')
-  handleMessageRead(
-    @MessageBody() data: { messageId: string; roomId: string; userId: string },
-    @ConnectedSocket() socket: Socket,
-  ) {
+  handleMessageRead(@MessageBody() data: { messageId: string; roomId: string; userId: string }, @ConnectedSocket() socket: Socket) {
     const { messageId, roomId, userId } = data;
     const room = this.roomsCollection.get(roomId);
 
     if (room) {
-      const message = room.messages.find(msg => msg.messageId === messageId);
+      const message = room.messages.find((msg) => msg.messageId === messageId);
       if (message) {
         message.status = 'read';
         this.server.to(roomId).emit('messageStatusUpdated', {
@@ -191,12 +179,12 @@ export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisco
   }
 
   private updateRoomParticipantStatus(userId: string, isOnline: boolean) {
-    this.roomsCollection.forEach(room => {
-      const participant = room.participants.find(p => p.userId === userId);
+    this.roomsCollection.forEach((room) => {
+      const participant = room.participants.find((p) => p.userId === userId);
       if (participant) {
         participant.isOnline = isOnline;
         participant.lastSeen = Date.now();
-        
+
         this.server.to(room.roomId).emit('participantStatusChanged', {
           roomId: room.roomId,
           userId,
