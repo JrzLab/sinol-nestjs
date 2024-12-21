@@ -1,9 +1,12 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { IResetPassword } from 'src/utility/interfaces/interface-auth';
+import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { ResetPasswordService } from './reset-password.service';
 import { UserService } from 'src/prisma/user/user.service';
 import { AuthService } from 'src/auth/auth.service';
+import { resetPasswordDto } from 'src/dto/reset-password-dto';
 
+@ApiTags('Authentication')
 @Controller('auth/reset-password')
 export class ResetPasswordController {
   constructor(
@@ -13,6 +16,10 @@ export class ResetPasswordController {
   ) {}
 
   @Post()
+  @ApiOperation({ summary: 'Reset Password' })
+  @ApiBody({ type: resetPasswordDto })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Password reset successfully' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid token' })
   async resetPassword(@Body() body: IResetPassword) {
     const { email, password, token } = body;
     if (!email) {

@@ -4,7 +4,7 @@ import { IRegister } from 'src/utility/interfaces/interface-auth';
 import { ApiTags, ApiResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { RegisterDto } from 'src/dto/register-dto';
 
-@ApiTags('Auth')
+@ApiTags('Authentication')
 @Controller('auth/sign-up')
 export class SignUpController {
   constructor(private readonly signUpService: SignUpService) {}
