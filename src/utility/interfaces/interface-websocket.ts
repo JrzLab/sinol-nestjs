@@ -1,26 +1,15 @@
-export interface IMessage {
-  messageId: string;
-  sender: string;
-  content: string;
-  type: 'text';
-  status: 'sent' | 'delivered' | 'read';
-  createdAt: number;
+interface IRoomChat {
+    id: number;
+    roomId: string;
+    createdAt: Date;
+    expiredAt: Date;
+    messages?: IMessageData[];
 }
 
-export interface IChatRoom {
-  roomId: string;
-  participants: IParticipant[];
-  messages: IMessage[];
-  roomCreatedAt: number;
-  roomExpiredAt: number;
-  lastActivity: number;
-}
-
-export interface IParticipant {
-  socketId: string;
-  userId: string;
-  displayName: string;
-  role: 'admin' | 'member';
-  lastSeen: number;
-  isOnline: boolean;
+interface IMessageData {
+    uid: string;
+    roomId: string;
+    senderId: number;
+    content: string;
+    messageTamp: Date;
 }
