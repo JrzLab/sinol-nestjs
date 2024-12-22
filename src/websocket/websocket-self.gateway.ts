@@ -1,8 +1,14 @@
 import { Server, Socket } from 'socket.io';
 import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, ConnectedSocket } from '@nestjs/websockets';
+import { Injectable } from '@nestjs/common';
 
+/*
+ * For Status user
+ */
+
+@Injectable()
 @WebSocketGateway(Number(process.env.PORT_WS), { cors: true })
-export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class WebsocketGatewaySelf implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private clientsCollection: Map<string, Socket> = new Map();
 
@@ -19,9 +25,15 @@ export class WebsocketGateway implements OnGatewayConnection, OnGatewayDisconnec
   handleDisconnect(@ConnectedSocket() socket: Socket) {
     this.clientsCollection.forEach((s, clientId) => {
       if (s.id === socket.id) {
-        console.log(`Client with clientId: ${clientId} disconnected`);
+        console.log(`Client disconnected with clientId: ${clientId}`);
         this.clientsCollection.delete(clientId);
+      } else {
+        console.log('Client disconnected without clientId');
       }
     });
+  }
+
+  getClient(clientId: string) {
+    return this.clientsCollection.get(clientId);
   }
 }

@@ -1,39 +1,30 @@
-import {
-  WebSocketGateway,
-  WebSocketServer,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  ConnectedSocket,
-  SubscribeMessage,
-  MessageBody,
-} from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
-import { WebsocketChatService } from './websocket-chat.service';
+import { MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { Injectable, ValidationPipe } from '@nestjs/common';
+import { WebsocketService } from 'src/prisma/websocket/websocket.service';
+import { CreateMessageDto } from 'src/dto/websocket/send-message-dto';
+import { GetMessageDto } from 'src/dto/websocket/get-message-dto';
 
-@WebSocketGateway(Number(process.env.PORT_WS) || 3001, { cors: true })
-export class WebsocketChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server;
-  private clientsCollection: Map<string, Socket> = new Map();
-  // constructor(
-  //   private readonly websocketChatService: WebsocketChatService,
-  // ){}
+/*
+ * For Chat user
+ */
 
-  handleConnection(@ConnectedSocket() socket: Socket) {
-    const clientId = Array.isArray(socket.handshake.query.clientId) ? socket.handshake.query.clientId[0] : socket.handshake.query.clientId;
-    if (clientId) {
-      this.clientsCollection.set(clientId, socket);
-      console.log(`Client connected with clientId: ${clientId}`);
-    } else {
-      console.log('Client connected without clientId');
-    }
+@Injectable()
+@WebSocketGateway(Number(process.env.PORT_WS))
+export class WebsocketChatGateway {
+  constructor(private readonly websocketService: WebsocketService) {}
+
+  @SubscribeMessage('sendMessage')
+  async handleMessage(@MessageBody(new ValidationPipe()) data: CreateMessageDto) {
+    const { emailSender, emailReciver, message } = data;
+    const createRoom = await this.websocketService.createRoom({ emailUser1: emailSender, emailUser2: emailReciver });
+    const addMessage = await this.websocketService.addMessage({ id: createRoom.id, emailUser: emailSender, content: message });
+    console.log('addMessage', addMessage);
   }
 
-  handleDisconnect(@ConnectedSocket() socket: Socket) {
-    this.clientsCollection.forEach((s, clientId) => {
-      if (s.id === socket.id) {
-        console.log(`Client with clientId: ${clientId} disconnected`);
-        this.clientsCollection.delete(clientId);
-      }
-    });
+  @SubscribeMessage('getMessage')
+  async handleGetMessage(@MessageBody(new ValidationPipe()) data: GetMessageDto) {
+    const { emailSender, emailReciver } = data;
+    const message = await this.websocketService.getMessage({ emailUser1: emailSender, emailUser2: emailReciver });
+    console.log('message', message);
   }
 }

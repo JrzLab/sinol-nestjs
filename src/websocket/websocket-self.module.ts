@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { WebsocketChatGateway } from './websocket-chat/websocket-chat.gateway';
-import { WebsocketGateway } from './websocket.gateway';
-import { WebsocketChatService } from './websocket-chat/websocket-chat.service';
+import { WebsocketGatewaySelf } from './websocket-self.gateway';
 import { PrismaModule } from '../prisma/prisma.module';
+import { WebsocketChatGateway } from './websocket-chat/websocket-chat.gateway';
+import { WebsocketChatService } from './websocket-chat/websocket-chat.service';
 
 @Module({
   imports: [PrismaModule],
-  providers: [WebsocketGateway, WebsocketChatGateway, WebsocketChatService],
+  providers: [WebsocketGatewaySelf, WebsocketChatService, WebsocketChatGateway],
 })
-
-export class WebsocketModule {}
+export class WebsocketSelfModule {}

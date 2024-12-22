@@ -1,8 +1,7 @@
-import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Post, ValidationPipe } from '@nestjs/common';
 import { SignUpService } from './sign-up.service';
-import { IRegister } from 'src/utility/interfaces/interface-auth';
 import { ApiTags, ApiResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
-import { RegisterDto } from 'src/dto/register-dto';
+import { SignUpDto } from 'src/dto/auth/sign-up-dto';
 
 @ApiTags('Authentication')
 @Controller('auth/sign-up')
@@ -11,10 +10,10 @@ export class SignUpController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiBody({ type: RegisterDto })
+  @ApiBody({ type: SignUpDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'User created successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'User creation failed because already exists' })
-  async createUser(@Body() body: IRegister) {
+  async createUser(@Body(new ValidationPipe()) body: SignUpDto) {
     const { email, password, firstName } = body;
 
     if (!email || !password || !firstName) {
