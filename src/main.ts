@@ -2,6 +2,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 import * as fs from 'fs';
 
 async function startServer() {
@@ -12,8 +13,9 @@ async function startServer() {
     port_ws: configService.get<number>('PORT_WS'),
   };
 
-  // Enable CORS
+  // Configuration
   app.enableCors();
+  app.useGlobalPipes(new ValidationPipe());
 
   // Swagger configuration
   const swaggerData = JSON.parse(fs.readFileSync('settings-swagger.json', 'utf8'));

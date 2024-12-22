@@ -1,4 +1,4 @@
-import { Body, Controller, HttpException, HttpStatus, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { SignUpService } from './sign-up.service';
 import { ApiTags, ApiResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { SignUpDto } from 'src/dto/auth/sign-up-dto';
@@ -13,7 +13,7 @@ export class SignUpController {
   @ApiBody({ type: SignUpDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'User created successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'User creation failed because already exists' })
-  async createUser(@Body(new ValidationPipe()) body: SignUpDto) {
+  async createUser(@Body() body: SignUpDto) {
     const { email, password, firstName } = body;
 
     if (!email || !password || !firstName) {
