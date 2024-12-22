@@ -7,18 +7,7 @@ export class WebsocketService {
 
   async createRoom(where: { emailUser1: string; emailUser2: string }) {
     const expiredAt = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000);
-    const roomData = await this.prismaService.roomChat.findFirst({
-      where: {
-        OR: [
-          {
-            AND: [{ userA: { email: where.emailUser1 } }, { userB: { email: where.emailUser2 } }],
-          },
-          {
-            AND: [{ userA: { email: where.emailUser2 } }, { userB: { email: where.emailUser1 } }],
-          },
-        ],
-      },
-    });
+    const roomData = this.getMessage(where);
     if (roomData) {
       return roomData;
     } else {
@@ -60,21 +49,33 @@ export class WebsocketService {
   }
 
   async getMessage(where: { emailUser1: string; emailUser2: string }) {
-    return this.prismaService.messageData.findMany({
+    return this.prismaService.roomChat.findFirst({
       where: {
-        roomChat: {
-          OR: [
-            {
-              AND: [{ userA: { email: where.emailUser1 } }, { userB: { email: where.emailUser2 } }],
-            },
-            {
-              AND: [{ userA: { email: where.emailUser2 } }, { userB: { email: where.emailUser1 } }],
-            },
-          ],
-        },
+        OR: [
+          {
+            AND: [{ userA: { email: where.emailUser1 } }, { userB: { email: where.emailUser2 } }],
+          },
+          {
+            AND: [{ userA: { email: where.emailUser2 } }, { userB: { email: where.emailUser1 } }],
+          },
+        ],
       },
       include: {
-        sender: true,
+        messages: {
+          select: {
+            uid: true,
+            roomChatId: true,
+            senderId: true,
+            sender: {
+              select: {
+                email: true,
+                firstName: true,
+              },
+            },
+            content: true,
+            messageTamp: true,
+          },
+        },
       },
     });
   }

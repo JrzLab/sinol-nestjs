@@ -22,8 +22,8 @@ model user {
   tokenReset String?       @db.VarChar(300)
   createdAt  DateTime      @default(now()) // Automatically set the current date and time when a new record is created
   message    messageData[]
-  roomChatA      roomChat[]    @relation("userA")
-  roomChatB      roomChat[]    @relation("userB")
+  roomChatA  roomChat[]    @relation("userA")
+  roomChatB  roomChat[]    @relation("userB")
 }
 
 model roomChat {
