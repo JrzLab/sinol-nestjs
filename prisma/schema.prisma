@@ -19,7 +19,7 @@ model user {
   lastName   String?       @db.VarChar(255)
   email      String        @unique @db.VarChar(255)
   password   String        @db.VarChar(255)
-  tokenReset String?       @db.VarChar(300)
+  tokenReset String?       @db.VarChar(400)
   createdAt  DateTime      @default(now()) // Automatically set the current date and time when a new record is created
   message    messageData[]
   roomChatA  roomChat[]    @relation("userA")
