@@ -14,7 +14,7 @@ export class ResetPasswordService {
 
   async verifyToken(email: string, token: string) {
     try {
-      const [tokenData] = await this.userService.findUserByIdentifier({ email });
+      const tokenData = await this.userService.findUserByIdentifier({ email });
       if (!tokenData.tokenReset) {
         return {
           code: HttpStatus.NOT_FOUND,

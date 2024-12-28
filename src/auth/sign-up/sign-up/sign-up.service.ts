@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { IRegister } from 'src/utility/interfaces/interface-auth';
 import { UserService } from 'src/prisma/user/user.service';
 import { AuthService } from 'src/auth/auth.service';
+import { SignUpDto } from 'src/dto/auth/sign-up-dto';
 
 @Injectable()
 export class SignUpService {
@@ -10,13 +10,13 @@ export class SignUpService {
     private readonly authService: AuthService,
   ) {}
 
-  async createUser(body: IRegister) {
+  async createUser(body: SignUpDto) {
     const { email, password, firstName } = body;
 
     const userExists = await this.userService.findUserByIdentifier({ email, firstName });
-    if (userExists.length) {
-      const firstNameExists = userExists.some((user) => user.firstName.toLowerCase() === firstName.toLowerCase());
-      const emailExists = userExists.some((user) => user.email.toLowerCase() === email.toLowerCase());
+    if (userExists) {
+      const firstNameExists = userExists.firstName.toLowerCase() === firstName.toLowerCase();
+      const emailExists = userExists.email.toLowerCase() === email.toLowerCase();
 
       const conflicts: string[] = [];
       if (firstNameExists) conflicts.push('FirstName');

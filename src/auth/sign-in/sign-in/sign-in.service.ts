@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
+import { SignInDto } from 'src/dto/auth/sign-in-dto';
 import { UserService } from 'src/prisma/user/user.service';
-import { ILogin } from 'src/utility/interfaces/interface-auth';
 
 @Injectable()
 export class SignInService {
@@ -10,18 +10,11 @@ export class SignInService {
     private readonly authService: AuthService,
   ) {}
 
-  async loginUsers(body: ILogin) {
+  async loginUsers(body: SignInDto) {
     const { email, password } = body;
-    if (!password || !email) {
-      return {
-        success: false,
-        message: 'Email and Password are required',
-        data: {},
-      };
-    }
 
     const userData = await this.userService.findUserByIdentifier({ email });
-    if (!userData.length) {
+    if (!userData) {
       return {
         success: false,
         message: 'User not found',
@@ -29,8 +22,7 @@ export class SignInService {
       };
     }
 
-    const user = userData[0];
-    const passwordMatch = await this.authService.compareHashText(password, user.password);
+    const passwordMatch = await this.authService.compareHashText(password, userData.password);
     if (!passwordMatch) {
       return {
         success: false,
@@ -43,9 +35,9 @@ export class SignInService {
       success: true,
       message: 'Login Successfully',
       data: {
-        firstName: user.firstName,
-        email: user.email,
-        joinedAt: user.createdAt,
+        firstName: userData.firstName,
+        email: userData.email,
+        joinedAt: userData.createdAt,
       },
     };
   }

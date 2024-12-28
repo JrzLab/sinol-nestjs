@@ -7,7 +7,8 @@ export class UserService {
 
   async findUserByIdentifier(where: { id?: number; firstName?: string; email?: string }) {
     const { email, firstName, id } = where;
-    return this.prismaService.user.findMany({
+
+    return this.prismaService.user.findFirst({
       where: {
         OR: [id ? { id } : undefined, email ? { email } : undefined, firstName ? { firstName } : undefined].filter(Boolean),
       },

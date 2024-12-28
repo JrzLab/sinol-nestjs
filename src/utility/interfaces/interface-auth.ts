@@ -1,22 +1,3 @@
-export interface ILogin {
-  email: string;
-  password: string;
-}
-
-export interface IRegister extends ILogin {
-  firstName: string;
-}
-
-export interface IResetPassword {
-  email: string;
-  password: string;
-  token: string;
-}
-
-export interface IRequestResetPass {
-  email: string;
-}
-
 export interface IToken {
   email: string;
   iat: number;
@@ -25,11 +6,12 @@ export interface IToken {
 
 // Prisma Interface
 export interface IUserData {
-  email: string;
-  password: string;
   id: number;
   firstName: string;
   lastName: string | null;
+  email: string;
+  password: string;
   tokenReset: string | null;
+  imageUrl: string | null;
   createdAt: Date;
 }

@@ -5,6 +5,6 @@ import { WebsocketService } from './websocket/websocket.service';
 
 @Module({
   providers: [PrismaService, UserService, WebsocketService],
-  exports: [UserService, WebsocketService],
+  exports: [PrismaService, UserService, WebsocketService],
 })
 export class PrismaModule {}

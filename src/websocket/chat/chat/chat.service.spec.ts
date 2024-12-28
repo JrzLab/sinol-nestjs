@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { WebsocketChatService } from './websocket-chat.service';
+import { WebsocketChatService } from './chat.service';
 
-describe('WebsocketChatService', () => {
+describe('ChatService', () => {
   let service: WebsocketChatService;
 
   beforeEach(async () => {

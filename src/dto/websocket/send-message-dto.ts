@@ -1,7 +1,12 @@
-import { IsString} from 'class-validator';
-import { GetMessageDto } from './get-message-dto';
+import { IsNotEmpty, IsString} from 'class-validator';
+import { GetEmailDto } from './get-email-dto';
 
-export class CreateMessageDto extends GetMessageDto {
+export class CreateMessageDto extends GetEmailDto {
   @IsString()
+  @IsNotEmpty()
   message: string;
+
+  @IsString()
+  @IsNotEmpty()
+  idRoom: number;
 }

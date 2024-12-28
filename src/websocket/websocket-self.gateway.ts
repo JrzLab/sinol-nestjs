@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, ConnectedSocket } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
+import { WebsocketService } from 'src/prisma/websocket/websocket.service';
 
 /*
  * For Status user
@@ -9,31 +10,32 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 @WebSocketGateway(Number(process.env.PORT_WS), { cors: true })
 export class WebsocketGatewaySelf implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private websocketService: WebsocketService) {}
   @WebSocketServer() server: Server;
-  private clientsCollection: Map<string, Socket> = new Map();
+  
 
   handleConnection(@ConnectedSocket() socket: Socket) {
-    const clientId = Array.isArray(socket.handshake.query.clientId) ? socket.handshake.query.clientId[0] : socket.handshake.query.clientId;
-    if (clientId) {
-      this.clientsCollection.set(clientId, socket);
-      console.log(`Client connected with clientId: ${clientId}`);
+    // Testing
+    const clientIdentify = Array.isArray(socket.handshake.query.clientIdentify) ? socket.handshake.query.clientIdentify[0] : socket.handshake.query.clientIdentify;
+    // const clientId = Array.isArray(socket.handshake.query.clientId) ? socket.handshake.query.clientId[0] : socket.handshake.query.clientId;
+    if (clientIdentify) {
+      const clinetCut = clientIdentify.split("@")[0];
+      this.websocketService.setClient(clinetCut, socket);
+      // console.log(this.clientsCollection);
+      console.log(`Client connected with clientId: ${clinetCut}`);
     } else {
       console.log('Client connected without clientId');
     }
   }
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
-    this.clientsCollection.forEach((s, clientId) => {
+    this.websocketService.getAllClients().forEach((s, clientId) => {
       if (s.id === socket.id) {
         console.log(`Client disconnected with clientId: ${clientId}`);
-        this.clientsCollection.delete(clientId);
+        this.websocketService.deleteClient(clientId);
       } else {
         console.log('Client disconnected without clientId');
       }
     });
-  }
-
-  getClient(clientId: string) {
-    return this.clientsCollection.get(clientId);
   }
 }

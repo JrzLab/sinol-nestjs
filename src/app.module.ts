@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { WebsocketSelfModule } from './websocket/websocket-self.module';
+import { WebsocketModuleSelf } from './websocket/websocket-self.module';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { WebsocketSelfModule } from './websocket/websocket-self.module';
     }),
     AuthModule,
     PrismaModule,
-    WebsocketSelfModule,
+    WebsocketModuleSelf,
   ],
   controllers: [AppController],
   providers: [AppService],

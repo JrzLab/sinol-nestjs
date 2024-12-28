@@ -1,8 +1,7 @@
-import { Body, Controller, HttpException, HttpStatus, Post, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { SignInService } from './sign-in.service';
 import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { SignInDto } from 'src/dto/auth/sign-in-dto';
-import { ILogin } from 'src/utility/interfaces/interface-auth';
 
 @ApiTags('Authentication')
 @Controller('auth/sign-in')
@@ -15,7 +14,7 @@ export class SignInController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Login Successfully' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Email and Password are required' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'User not found or invalid password' })
-  async loginUser(@Body(new ValidationPipe()) body: SignInDto) {
+  async loginUser(@Body() body: SignInDto) {
     const { email, password } = body;
 
     if (!password || !email) {
