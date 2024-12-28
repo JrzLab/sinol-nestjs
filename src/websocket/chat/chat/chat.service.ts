@@ -47,7 +47,6 @@ export class WebsocketChatService {
         OR: orCondition,
       },
       include: {
-        userB: { select: { email: true, firstName: true } },
         messages: {
           orderBy: { messageTemp: 'asc' },
           select: {
