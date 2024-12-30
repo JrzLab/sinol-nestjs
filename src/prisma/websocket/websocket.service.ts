@@ -1,24 +1,84 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { Socket } from 'socket.io';
 
 @Injectable()
 export class WebsocketService {
-  private clientsCollection: Map<string, Socket> = new Map();
+  constructor(private readonly prismaService: PrismaService) {}
 
-  setClient(clientId: string, socket: Socket) {
-    this.clientsCollection.set(clientId, socket);
+  async createRoom(where: { emailUser1: string; emailUser2: string }) {
+    const expiredAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).setHours(23, 0, 0, 0);
+    const roomData = await this.getMessageAndChatRoom({ emailUser1: where.emailUser1, emailUser2: where.emailUser2 });
+    return roomData
+      ? roomData
+      : this.prismaService.roomChat.create({
+          data: {
+            userA: { connect: { email: where.emailUser1 } },
+            userB: { connect: { email: where.emailUser2 } },
+            expiredAt: new Date(expiredAt),
+          },
+        });
   }
 
-  deleteClient(clientId: string) {
-    this.clientsCollection.delete(clientId);
+  async getAllRoomWithExpiredAt() {
+    return this.prismaService.roomChat.findMany({
+      where: { expiredAt: { lte: new Date() } },
+    });
   }
 
-  getClient(clientId: string) {
-    return this.clientsCollection.get(clientId.split('@')[0]);
+  async deleteRoomExpiredAt(where: { id: number }) {
+    await this.prismaService.roomChat.update({
+      where: { id: where.id },
+      data: { expiredAt: null },
+    });
+    await this.prismaService.messageData.deleteMany({
+      where: { roomChat: { id: where.id } },
+    });
   }
 
-  getAllClients() {
-    return this.clientsCollection;
+  async addMessage(data: { id: number; emailUser: string; content: string }) {
+    await this.prismaService.roomChat.update({
+      where: { id: data.id },
+      data: { expiredAt: new Date(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).setHours(23, 0, 0, 0)) },
+    });
+    return this.prismaService.messageData.create({
+      data: {
+        roomChat: { connect: { id: data.id } },
+        sender: { connect: { email: data.emailUser } },
+        content: data.content,
+      },
+      include: {
+        sender: { select: { email: true, firstName: true } },
+      },
+    });
+  }
+
+  async getMessageAndChatRoom(where: { id?: number; emailUser1?: string; emailUser2?: string }) {
+    const orCondition =
+      where.emailUser1 && where.emailUser2
+        ? [
+            { AND: [{ userA: { email: where.emailUser1 } }, { userB: { email: where.emailUser2 } }] },
+            { AND: [{ userA: { email: where.emailUser2 } }, { userB: { email: where.emailUser1 } }] },
+          ]
+        : undefined;
+
+    return this.prismaService.roomChat.findFirst({
+      where: {
+        id: where.id,
+        OR: orCondition,
+      },
+      include: {
+        messages: {
+          orderBy: { messageTemp: 'asc' },
+          select: {
+            uid: true,
+            roomChatId: true,
+            senderId: true,
+            sender: { select: { email: true, firstName: true } },
+            content: true,
+            messageTemp: true,
+          },
+        },
+      },
+    });
   }
 }

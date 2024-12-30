@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { WebsocketChatController } from './chat.controller';
+import { WebsocketChatController } from './websocket-chat.controller';
 
 describe('ChatController', () => {
   let controller: WebsocketChatController;

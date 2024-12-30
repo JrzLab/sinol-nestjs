@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { GetEmailDto } from './get-email-dto';
 
 export class CreateMessageDto extends GetEmailDto {

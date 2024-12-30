@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class GetMessageDto {
-    @IsString()
-    @IsNotEmpty()
-    idRoom: string;
+  @IsString()
+  @IsNotEmpty()
+  idRoom: string;
 }

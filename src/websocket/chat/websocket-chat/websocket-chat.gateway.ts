@@ -2,8 +2,7 @@ import { MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websock
 import { Injectable } from '@nestjs/common';
 import { WebsocketService } from 'src/prisma/websocket/websocket.service';
 import { CreateMessageDto } from 'src/dto/websocket/send-message-dto';
-import { WebsocketGatewaySelf } from 'src/websocket/websocket-self.gateway';
-import { WebsocketChatService } from './chat.service';
+import { WebsocketSelfService } from 'src/websocket/websocket-self/websocket-self.service';
 
 /*
  * For Chat user
@@ -14,20 +13,20 @@ import { WebsocketChatService } from './chat.service';
 export class WebsocketChatGateway {
   constructor(
     private readonly websocketService: WebsocketService,
-    private readonly websocketChatService: WebsocketChatService
+    private readonly websocketSelfService: WebsocketSelfService,
   ) {}
 
   @SubscribeMessage('sendMessage')
   async handleMessage(@MessageBody() data: CreateMessageDto) {
     const { identifySender, identifyReciver, message, idRoom } = data;
-    const addMessage = await this.websocketChatService.addMessage({
+    const addMessage = await this.websocketService.addMessage({
       id: Number(idRoom),
       emailUser: identifySender,
       content: message,
     });
     [identifySender, identifyReciver].forEach((id) => {
       try {
-        this.websocketService.getClient(id).emit('updateMessageClient', addMessage);
+        this.websocketSelfService.getClient(id).emit('updateMessageClient', addMessage);
       } catch (error) {}
     });
   }
