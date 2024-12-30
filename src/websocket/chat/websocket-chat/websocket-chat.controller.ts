@@ -22,8 +22,9 @@ export class WebsocketChatController {
       throw new HttpException(
         {
           code: HttpStatus.NOT_FOUND,
-          status: false,
+          success: false,
           message: 'User not found',
+          data: {},
         },
         HttpStatus.NOT_FOUND,
       );
