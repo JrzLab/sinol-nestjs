@@ -26,7 +26,7 @@ export class ResetPasswordController {
       throw new HttpException(
         {
           code: HttpStatus.BAD_REQUEST,
-          status: false,
+          success: false,
           message: 'Email is required',
           data: {},
         },
@@ -34,15 +34,15 @@ export class ResetPasswordController {
       );
     }
 
-    const verifyToken = await this.resetPasswordService.verifyToken(email, token);
-    if (verifyToken.status) {
+    const verifyToken = await this.resetPasswordService.verifyToken({ email, token });;
+    if (verifyToken.success) {
       const hashPassword = await this.authService.hashText(password);
       const responseData = await this.userService.changePassword({ email }, { password: hashPassword });
       if (responseData.password === hashPassword) {
         throw new HttpException(
           {
             code: HttpStatus.OK,
-            status: true,
+            success: true,
             message: verifyToken.message,
             data: {},
           },
@@ -54,7 +54,7 @@ export class ResetPasswordController {
     throw new HttpException(
       {
         code: HttpStatus.UNAUTHORIZED,
-        status: false,
+        success: false,
         message: verifyToken.message,
         data: {},
       },

@@ -42,10 +42,13 @@ export class SignInService {
     return {
       success: true,
       message: 'Login Successfully',
-      data: {
+      data: { 
         firstName: user.firstName,
+        lastName: user.lastName,
+        imageUrl: user.imageUrl,
         email: user.email,
         joinedAt: user.createdAt,
+        loginAt: Math.floor(Date.now() / 1000),
       },
     };
   }

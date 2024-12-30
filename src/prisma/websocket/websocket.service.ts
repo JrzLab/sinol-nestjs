@@ -73,7 +73,7 @@ export class WebsocketService {
               },
             },
             content: true,
-            messageTamp: true,
+            messageTemp: true,
           },
         },
       },

@@ -9,6 +9,8 @@ import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './jwtConstans';
 import { LogoutModule } from './logout/logout.module';
+import { SigninGoogleModule } from './signin-google/signin-google.module';
+import { VerifyTokenResetPassModule } from './verify-token-reset-pass/verify-token-reset-pass.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { LogoutModule } from './logout/logout.module';
     LogoutModule,
     ResetPasswordModule,
     RequestResetPassModule,
+    SigninGoogleModule,
+    VerifyTokenResetPassModule,
   ],
   providers: [AuthService],
 })

@@ -5,6 +5,7 @@ export interface ILogin {
 
 export interface IRegister extends ILogin {
   firstName: string;
+  lastName?: string;
 }
 
 export interface IResetPassword {
@@ -25,11 +26,23 @@ export interface IToken {
 
 // Prisma Interface
 export interface IUserData {
+  id: number;
   email: string;
   password: string;
-  id: number;
   firstName: string;
   lastName: string | null;
   tokenReset: string | null;
   createdAt: Date;
+}
+
+export interface ISigninGoogle {
+  email: string;
+  firstName: string;
+  lastName?: string | null;
+  imageUrl?: string | null;
+}
+
+export interface IVerifyToken {
+  email: string;
+  token: string;
 }
