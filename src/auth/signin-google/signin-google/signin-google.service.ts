@@ -21,11 +21,10 @@ export class SigninGoogleService {
     try {
       // Mencari pengguna berdasarkan email
       const userData = await this.userService.findUserByIdentifier({ email });
-      let user = userData[0];
 
       // Jika pengguna tidak ditemukan, buat pengguna baru
-      if (!userData.length) {
-        user = await this.userService.fetchUserOrCreateUser(data);
+      if (!userData) {
+        const user = await this.userService.fetchUserOrCreateUser(data);
 
         if (!user) {
           return {
@@ -54,11 +53,11 @@ export class SigninGoogleService {
         success: true,
         message: 'Login Successfully',
         data: {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          imageUrl: user.imageUrl,
-          email: user.email,
-          joinedAt: user.createdAt,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          imageUrl: userData.imageUrl,
+          email: userData.email,
+          joinedAt: userData.createdAt,
           loginAt: Math.floor(Date.now() / 1000),
         },
       };

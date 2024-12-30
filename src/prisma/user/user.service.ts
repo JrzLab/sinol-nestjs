@@ -19,7 +19,7 @@ export class UserService {
     return this.prismaService.user.findMany();
   }
 
-  async create(data: { email: string; password: string; firstName: string, lastName?: string | null, imageUrl?: string | null }) {
+  async create(data: { email: string; password: string; firstName: string; lastName?: string | null; imageUrl?: string | null }) {
     return this.prismaService.user.create({ data });
   }
 
@@ -46,8 +46,8 @@ export class UserService {
 
   async fetchUserOrCreateUser(data: { email: string; firstName: string; lastName?: string | null; imageUrl?: string | null }) {
     const existingUser = await this.findUserByIdentifier({ email: data.email });
-    if (existingUser.length > 0) {
-      return existingUser[0];
+    if (existingUser) {
+      return existingUser;
     }
     return this.create({ ...data, password: '' });
   }

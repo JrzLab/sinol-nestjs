@@ -25,9 +25,9 @@ export class VerifyTokenResetPassService {
     }
 
     try {
-      const [user] = await this.userService.findUserByIdentifier({ email });
+      const userData = await this.userService.findUserByIdentifier({ email });
 
-      if (!user) {
+      if (!userData) {
         return {
           code: HttpStatus.NOT_FOUND,
           success: false,
@@ -36,7 +36,7 @@ export class VerifyTokenResetPassService {
         };
       }
 
-      if (!user.tokenReset) {
+      if (!userData.tokenReset) {
         return {
           code: HttpStatus.NOT_FOUND,
           success: false,
