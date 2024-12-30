@@ -20,7 +20,7 @@ export class SignUpController {
       throw new HttpException(
         {
           code: HttpStatus.BAD_REQUEST,
-          status: false,
+          success: false,
           message: 'firstName, Email, and Password are required',
           data: {},
         },
@@ -34,7 +34,7 @@ export class SignUpController {
       throw new HttpException(
         {
           code: HttpStatus.CREATED,
-          status: true,
+          success: true,
           message: userData.message,
           data: userData.data,
         },
@@ -44,7 +44,7 @@ export class SignUpController {
       throw new HttpException(
         {
           code: HttpStatus.CONFLICT,
-          status: false,
+          success: false,
           message: userData.message,
           data: userData.data.conflicts || userData.data.error,
         },

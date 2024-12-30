@@ -21,7 +21,7 @@ export class SignInController {
       throw new HttpException(
         {
           code: HttpStatus.BAD_REQUEST,
-          status: false,
+          success: false,
           message: 'Email and Password are required',
           data: {},
         },
@@ -35,7 +35,7 @@ export class SignInController {
       throw new HttpException(
         {
           code: HttpStatus.OK,
-          status: true,
+          success: true,
           message: result.message,
           data: result.data,
         },
@@ -45,7 +45,7 @@ export class SignInController {
       throw new HttpException(
         {
           code: HttpStatus.UNAUTHORIZED,
-          status: false,
+          success: false,
           message: result.message,
           data: {},
         },

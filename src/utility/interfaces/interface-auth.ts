@@ -7,11 +7,23 @@ export interface IToken {
 // Prisma Interface
 export interface IUserData {
   id: number;
-  firstName: string;
-  lastName: string | null;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string | null;
   tokenReset: string | null;
   imageUrl: string | null;
   createdAt: Date;
+}
+
+export interface ISigninGoogle {
+  email: string;
+  firstName: string;
+  lastName?: string | null;
+  imageUrl?: string | null;
+}
+
+export interface IVerifyToken {
+  email: string;
+  token: string;
 }

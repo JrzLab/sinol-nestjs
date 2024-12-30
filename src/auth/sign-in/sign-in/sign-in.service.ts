@@ -22,7 +22,8 @@ export class SignInService {
       };
     }
 
-    const passwordMatch = await this.authService.compareHashText(password, userData.password);
+    const user = userData[0];
+    const passwordMatch = await this.authService.compareHashText(password, user.password);
     if (!passwordMatch) {
       return {
         success: false,
@@ -34,10 +35,13 @@ export class SignInService {
     return {
       success: true,
       message: 'Login Successfully',
-      data: {
-        firstName: userData.firstName,
-        email: userData.email,
-        joinedAt: userData.createdAt,
+      data: { 
+        firstName: user.firstName,
+        lastName: user.lastName,
+        imageUrl: user.imageUrl,
+        email: user.email,
+        joinedAt: user.createdAt,
+        loginAt: Math.floor(Date.now() / 1000),
       },
     };
   }

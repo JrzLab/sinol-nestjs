@@ -28,7 +28,7 @@ export class RequestResetPassController {
       throw new HttpException(
         {
           code: HttpStatus.NOT_FOUND,
-          status: false,
+          success: false,
           message: 'User not found',
           data: {},
         },
@@ -41,7 +41,7 @@ export class RequestResetPassController {
     throw new HttpException(
       {
         code: HttpStatus.CREATED,
-        status: true,
+        success: true,
         message: 'Success created token',
         data: {
           access_token: jwtToken,

@@ -16,9 +16,9 @@ export class RequestResetPassService {
 
     let htmlContent = fs.readFileSync('./view/resetPassword.html', 'utf-8');
     htmlContent = htmlContent
-      .replace(/{{name}}/g, `${userData.firstName} ${userData.lastName ?? ''}`)
+      .replace(/{{name}}/g, `${userData.lastName ? `${userData.firstName} ${userData.lastName}` : userData.firstName}`)
       .replace(/\[Product Name\]/g, 'Sinol')
-      .replace(/\{{action_url}}/g, 'https://google.com/');
+      .replace(/\{{action_url}}/g, `http://localhost:3000/auth/forgot-password?profile=${jwtToken}&userId=${userData.email}`);
 
     await this.mailService.sendMail({
       to: userData.email, // list of receivers

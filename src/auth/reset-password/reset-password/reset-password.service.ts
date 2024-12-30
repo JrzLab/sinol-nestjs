@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IToken } from 'src/utility/interfaces/interface-auth';
+import { IToken, IVerifyToken } from 'src/utility/interfaces/interface-auth';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/prisma/user/user.service';
 
@@ -12,13 +12,14 @@ export class ResetPasswordService {
     private readonly authService: AuthService,
   ) {}
 
-  async verifyToken(email: string, token: string) {
+  async verifyToken(data: IVerifyToken) {
+    const { email, token } = data;
     try {
       const tokenData = await this.userService.findUserByIdentifier({ email });
       if (!tokenData.tokenReset) {
         return {
           code: HttpStatus.NOT_FOUND,
-          status: false,
+          success: false,
           message: 'Token not found or expired',
           data: {},
         };
@@ -30,7 +31,7 @@ export class ResetPasswordService {
       return (
         verifyToken && {
           code: HttpStatus.OK,
-          status: true,
+          success: true,
           message: 'Success change password',
           data: {},
         }
@@ -39,7 +40,7 @@ export class ResetPasswordService {
       this.userService.deleteTokenReset({ email });
       return {
         code: HttpStatus.UNAUTHORIZED,
-        status: false,
+        success: false,
         message: `Token invalid : ${error}`,
         data: {},
       };
