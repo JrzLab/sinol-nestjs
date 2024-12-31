@@ -9,7 +9,6 @@ async function startServer() {
 
   // Configuration
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe());
 
   // Menggunakan ValidationPipe secara global
   app.useGlobalPipes(
