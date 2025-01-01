@@ -26,6 +26,7 @@ model user {
   roomChatA  roomChat[]    @relation("userA")
   roomChatB  roomChat[]    @relation("userB")
   userClass  userClass[]
+  userTask   userTask[]
 }
 
 model roomChat {
@@ -52,22 +53,25 @@ model messageData {
 // This is for the group class
 
 model userClass {
-  uid       String     @id @default(uuid())
-  user      user       @relation(fields: [userId], references: [id])
-  userId    Int
-  class     groupClass @relation(fields: [classId], references: [id])
-  classId   Int
-  createdAt DateTime   @default(now())
-  fileTask  fileTask[]
+  uid          String     @id @default(uuid())
+  user         user       @relation(fields: [userId], references: [id])
+  userId       Int
+  groupClas    groupClass @relation(fields: [groupClassId], references: [id])
+  groupClassId Int
+  createdAt    DateTime   @default(now())
 }
 
 model userTask {
-  id         Int        @id @default(autoincrement())
-  fileTask   fileTask   @relation(fields: [fileTaskId], references: [id])
-  fileTaskId Int
-  status     taskStatus
-  createdAt  DateTime   @default(now())
-  editedAt   DateTime   @updatedAt
+  id             Int           @id @default(autoincrement())
+  fileTask       fileTask      @relation(fields: [fileTaskId], references: [id])
+  fileTaskId     Int
+  user           user          @relation(fields: [userId], references: [id])
+  userId         Int
+  classSubject   classSubject @relation(fields: [classSubjectId], references: [id])
+  classSubjectId Int
+  status         taskStatus
+  createdAt      DateTime      @default(now())
+  editedAt       DateTime      @updatedAt
 }
 
 model classSubject {
@@ -78,6 +82,7 @@ model classSubject {
   editedAt     DateTime   @updatedAt
   groupClass   groupClass @relation(fields: [groupClassId], references: [id])
   groupClassId Int
+  userTask     userTask[]
 }
 
 model groupClass {
@@ -89,11 +94,9 @@ model groupClass {
 }
 
 model fileTask {
-  id           Int        @id @default(autoincrement())
-  fileName     String     @db.VarChar(255)
-  userClass    userClass  @relation(fields: [userClassUid], references: [uid])
-  userClassUid String
-  userTask     userTask[]
+  id       Int        @id @default(autoincrement())
+  fileName String     @db.VarChar(255)
+  userTask userTask[]
 }
 
 enum taskStatus {
