@@ -3,7 +3,6 @@ import { Socket } from 'socket.io';
 
 @Injectable()
 export class WebsocketSelfService {
-  constructor() {}
   private clientsCollection: Map<string, Socket> = new Map();
 
   setClient(clientId: string, socket: Socket) {

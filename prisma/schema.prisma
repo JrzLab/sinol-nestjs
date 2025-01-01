@@ -14,17 +14,18 @@ datasource db {
 }
 
 model user {
-  id           Int           @id @default(autoincrement()) // Automatically increment the value when a new record is created
-  firstName    String        @db.VarChar(255)
-  lastName     String?       @db.VarChar(255)
-  email        String        @unique @db.VarChar(255)
-  password     String?       @db.VarChar(255)
-  tokenReset   String?       @db.VarChar(400)
-  imageUrl     String?       @db.VarChar(255)
-  createdAt    DateTime      @default(now()) // Automatically set the current date and time when a new record is created
-  message      messageData[]
-  roomChatA    roomChat[]    @relation("userA")
-  roomChatB    roomChat[]    @relation("userB")
+  id         Int           @id @default(autoincrement()) // Automatically increment the value when a new record is created
+  firstName  String        @db.VarChar(255)
+  lastName   String?       @db.VarChar(255)
+  email      String        @unique @db.VarChar(255)
+  password   String?       @db.VarChar(255)
+  tokenReset String?       @db.VarChar(400)
+  imageUrl   String?       @db.VarChar(255)
+  createdAt  DateTime      @default(now()) // Automatically set the current date and time when a new record is created
+  message    messageData[]
+  roomChatA  roomChat[]    @relation("userA")
+  roomChatB  roomChat[]    @relation("userB")
+  userClass  userClass[]
 }
 
 model roomChat {
@@ -46,4 +47,58 @@ model messageData {
   senderId    Int
   content     String   @db.Text()
   messageTemp DateTime @default(now())
+}
+
+// This is for the group class
+
+model userClass {
+  uid       String     @id @default(uuid())
+  user      user       @relation(fields: [userId], references: [id])
+  userId    Int
+  class     groupClass @relation(fields: [classId], references: [id])
+  classId   Int
+  createdAt DateTime   @default(now())
+  fileTask  fileTask[]
+}
+
+model userTask {
+  id         Int        @id @default(autoincrement())
+  fileTask   fileTask   @relation(fields: [fileTaskId], references: [id])
+  fileTaskId Int
+  status     taskStatus
+  createdAt  DateTime   @default(now())
+  editedAt   DateTime   @updatedAt
+}
+
+model classSubject {
+  id           Int        @id @default(autoincrement())
+  title        String     @db.VarChar(255)
+  discription  String     @db.Text()
+  createdAt    DateTime   @default(now())
+  editedAt     DateTime   @updatedAt
+  groupClass   groupClass @relation(fields: [groupClassId], references: [id])
+  groupClassId Int
+}
+
+model groupClass {
+  id           Int            @id @default(autoincrement())
+  className    String         @db.VarChar(255)
+  discription  String         @db.VarChar(255)
+  userClass    userClass[]
+  classSubject classSubject[]
+}
+
+model fileTask {
+  id           Int        @id @default(autoincrement())
+  fileName     String     @db.VarChar(255)
+  userClass    userClass  @relation(fields: [userClassUid], references: [uid])
+  userClassUid String
+  userTask     userTask[]
+}
+
+enum taskStatus {
+  NOT_COLLECTING
+  LATE
+  PENDING
+  COMPLATE
 }
