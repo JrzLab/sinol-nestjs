@@ -1,14 +1,14 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
 import { GetEmailDto } from 'src/dto/websocket/get-email-dto';
 import { GetMessageDto } from 'src/dto/websocket/get-message-dto';
-import { UserService } from 'src/prisma/user/user.service';
-import { WebsocketService } from 'src/prisma/websocket/websocket.service';
+import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
+import { WebsocketPrismaService } from 'src/prisma/websocket/websocketPrisma.service';
 
 @Controller('websocket/chat')
 export class WebsocketChatController {
   constructor(
-    private readonly userService: UserService,
-    private readonly websocketService: WebsocketService,
+    private readonly userService: UserPrismaService,
+    private readonly websocketService: WebsocketPrismaService,
   ) {}
 
   @Post('create')

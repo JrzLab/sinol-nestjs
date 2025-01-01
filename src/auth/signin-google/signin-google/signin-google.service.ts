@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from 'src/prisma/user/user.service';
+import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
 import { ISigninGoogle } from 'src/utility/interfaces/interface-auth';
 
 @Injectable()
 export class SigninGoogleService {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserPrismaService) {}
 
   async fetchOrCreateUsers(data: ISigninGoogle) {
     const { email, firstName, imageUrl, lastName } = data;

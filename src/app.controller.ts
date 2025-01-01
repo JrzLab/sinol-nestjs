@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param } from '@nestjs/common';
 import { AppService } from './app.service';
-import { UserService } from './prisma/user/user.service';
+import { UserPrismaService } from './prisma/user/userPrisma.service';
 import { ApiTags, ApiResponse, ApiParam, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { FindUserDto } from './dto/find-user-dto';
 
@@ -9,7 +9,7 @@ import { FindUserDto } from './dto/find-user-dto';
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly userService: UserService,
+    private readonly userService: UserPrismaService,
   ) {}
 
   @Get()

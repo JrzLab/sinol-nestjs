@@ -1,7 +1,7 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { ResetPasswordService } from './reset-password.service';
-import { UserService } from 'src/prisma/user/user.service';
+import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
 import { AuthService } from 'src/auth/auth.service';
 import { ResetPasswordDto } from 'src/dto/auth/reset-password-dto';
 
@@ -10,7 +10,7 @@ import { ResetPasswordDto } from 'src/dto/auth/reset-password-dto';
 export class ResetPasswordController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService,
+    private readonly userService: UserPrismaService,
     private readonly resetPasswordService: ResetPasswordService,
   ) {}
 

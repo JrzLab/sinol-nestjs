@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from 'src/prisma/user/user.service';
+import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
 import { AuthService } from 'src/auth/auth.service';
 import { SignUpDto } from 'src/dto/auth/sign-up-dto';
 
 @Injectable()
 export class SignUpService {
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: UserPrismaService,
     private readonly authService: AuthService,
   ) {}
 

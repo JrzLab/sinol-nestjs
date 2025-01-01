@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { UserService } from './user/user.service';
-import { WebsocketService } from './websocket/websocket.service';
-import { ClassPrismaService } from './class/class/classPrisma.service';
+import { UserPrismaService } from './user/userPrisma.service';
+import { WebsocketPrismaService } from './websocket/websocketPrisma.service';
+import { ClassPrismaService } from './class/classPrisma.service';
 
 @Module({
-  providers: [PrismaService, UserService, WebsocketService, ClassPrismaService],
-  exports: [PrismaService, UserService, WebsocketService, ClassPrismaService],
+  providers: [PrismaService, UserPrismaService, WebsocketPrismaService, ClassPrismaService],
+  exports: [PrismaService, UserPrismaService, WebsocketPrismaService, ClassPrismaService],
 })
 export class PrismaModule {}

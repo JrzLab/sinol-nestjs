@@ -2,7 +2,7 @@ import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/commo
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
-import { UserService } from 'src/prisma/user/user.service';
+import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
 import { RequestResetPassService } from './request-reset-pass.service';
 import { RequestResetPassDto } from 'src/dto/auth/request-reset-pass-dto';
 
@@ -10,7 +10,7 @@ import { RequestResetPassDto } from 'src/dto/auth/request-reset-pass-dto';
 @Controller('auth/request-reset-pass')
 export class RequestResetPassController {
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: UserPrismaService,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly requestResetPasswordService: RequestResetPassService,

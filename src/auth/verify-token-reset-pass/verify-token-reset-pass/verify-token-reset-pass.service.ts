@@ -1,13 +1,13 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/prisma/user/user.service';
+import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
 import { AuthService } from 'src/auth/auth.service';
 import { IToken, IVerifyToken } from 'src/utility/interfaces/interface-auth';
 
 @Injectable()
 export class VerifyTokenResetPassService {
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: UserPrismaService,
     private readonly jwtService: JwtService,
     private readonly authService: AuthService,
   ) {}

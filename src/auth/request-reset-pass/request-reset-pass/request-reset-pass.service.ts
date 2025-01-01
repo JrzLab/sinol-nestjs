@@ -2,12 +2,12 @@ import * as fs from 'fs';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { IUserData } from 'src/utility/interfaces/interface-auth';
-import { UserService } from 'src/prisma/user/user.service';
+import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
 
 @Injectable()
 export class RequestResetPassService {
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: UserPrismaService,
     private readonly mailService: MailerService,
   ) {}
 

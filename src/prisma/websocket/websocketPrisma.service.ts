@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
-export class WebsocketService {
+export class WebsocketPrismaService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createRoom(where: { emailUser1: string; emailUser2: string }) {

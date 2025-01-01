@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { WebsocketService } from 'src/prisma/websocket/websocket.service';
+import { WebsocketPrismaService } from 'src/prisma/websocket/websocketPrisma.service';
 
 @Injectable()
 export class WebsocketChatService {
   private readonly logger = new Logger(WebsocketChatService.name);
-  constructor(private readonly websocketService: WebsocketService) {}
+  constructor(private readonly websocketService: WebsocketPrismaService) {}
 
   @Cron('0 0 * * *')
   async handleCron() {

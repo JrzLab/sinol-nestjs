@@ -25,8 +25,9 @@ model user {
   message    messageData[]
   roomChatA  roomChat[]    @relation("userA")
   roomChatB  roomChat[]    @relation("userB")
-  userClass  userClass[]
+  userClass  userClass?
   userTask   userTask[]
+  groupClass groupClass[]
 }
 
 model roomChat {
@@ -53,25 +54,24 @@ model messageData {
 // This is for the group class
 
 model userClass {
-  uid          String     @id @default(uuid())
-  user         user       @relation(fields: [userId], references: [id])
-  userId       Int
-  groupClas    groupClass @relation(fields: [groupClassId], references: [id])
-  groupClassId Int
-  createdAt    DateTime   @default(now())
+  uid        String       @id @default(uuid())
+  user       user         @relation(fields: [userId], references: [id])
+  userId     Int          @unique
+  groupClass groupClass[]
+  createdAt  DateTime     @default(now())
 }
 
 model userTask {
-  id             Int           @id @default(autoincrement())
-  fileTask       fileTask      @relation(fields: [fileTaskId], references: [id])
+  id             Int          @id @default(autoincrement())
+  fileTask       fileTask     @relation(fields: [fileTaskId], references: [id])
   fileTaskId     Int
-  user           user          @relation(fields: [userId], references: [id])
+  user           user         @relation(fields: [userId], references: [id])
   userId         Int
   classSubject   classSubject @relation(fields: [classSubjectId], references: [id])
   classSubjectId Int
   status         taskStatus
-  createdAt      DateTime      @default(now())
-  editedAt       DateTime      @updatedAt
+  createdAt      DateTime     @default(now())
+  editedAt       DateTime     @updatedAt
 }
 
 model classSubject {
@@ -87,9 +87,12 @@ model classSubject {
 
 model groupClass {
   id           Int            @id @default(autoincrement())
+  owner        user           @relation(fields: [ownerId], references: [id])
+  ownerId      Int
   className    String         @db.VarChar(255)
   discription  String         @db.VarChar(255)
-  userClass    userClass[]
+  userClass    userClass      @relation(fields: [userClassUid], references: [uid])
+  userClassUid String
   classSubject classSubject[]
 }
 

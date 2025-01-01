@@ -1,6 +1,6 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
-import { WebsocketService } from 'src/prisma/websocket/websocket.service';
+import { WebsocketPrismaService } from 'src/prisma/websocket/websocketPrisma.service';
 import { CreateMessageDto } from 'src/dto/websocket/send-message-dto';
 import { WebsocketSelfService } from 'src/websocket/websocket-self/websocket-self.service';
 
@@ -12,7 +12,7 @@ import { WebsocketSelfService } from 'src/websocket/websocket-self/websocket-sel
 @WebSocketGateway(Number(process.env.PORT_WS))
 export class WebsocketChatGateway {
   constructor(
-    private readonly websocketService: WebsocketService,
+    private readonly websocketService: WebsocketPrismaService,
     private readonly websocketSelfService: WebsocketSelfService,
   ) {}
 
