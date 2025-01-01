@@ -34,7 +34,7 @@ export class WebsocketChatController {
     throw new HttpException(
       {
         code: HttpStatus.CREATED,
-        status: true,
+        success: true,
         message: 'Room created successfully',
         data: {
           id: roomData.id,
