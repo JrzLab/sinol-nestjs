@@ -53,10 +53,6 @@ export class SigninGoogleService {
         success: true,
         message: 'Login Successfully',
         data: {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          imageUrl: userData.imageUrl,
-          email: userData.email,
           joinedAt: userData.createdAt,
           loginAt: Math.floor(Date.now() / 1000),
         },
