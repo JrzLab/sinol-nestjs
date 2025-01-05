@@ -30,9 +30,20 @@ export class ClassPrismaService {
     });
   }
 
-  async getUClass(user: { email: string }) {
+  async getUClass(user: { email?: string; uid?: string }) {
+    const condition = user.email
+      ? {
+          user: {
+            email: user.email,
+          },
+        }
+      : {
+          uid: {
+            contains: user.uid,
+          },
+        };
     return await this.prismaService.userClass.findFirst({
-      where: { user },
+      where: condition,
       include: {
         groupClass: {
           select: {

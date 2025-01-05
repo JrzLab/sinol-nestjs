@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param } from '@nestjs/common';
 import { AppService } from './app.service';
-import { UserPrismaService } from './prisma/user/userPrisma.service';
+import { UserPrismaService } from './prisma/userPrisma/user-prisma.service';
 import { ApiTags, ApiResponse, ApiParam, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { FindUserDto } from './dto/find-user-dto';
 

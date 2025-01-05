@@ -10,12 +10,18 @@ export class ClassController {
 
   @Get('/:email')
   async getClass(@Param() params: getClassDto) {
+    const uClassData = await this.classService.getUClass(params.email);
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Class retrieved successfully',
-        data: await this.classService.getUClass(params.email),
+        data: {
+          uid: uClassData.uid.split('-')[0],
+          userId: uClassData.userId,
+          createdAt: uClassData.createdAt,
+          groupClass: uClassData.groupClass,
+        },
       },
       HttpStatus.OK,
     );

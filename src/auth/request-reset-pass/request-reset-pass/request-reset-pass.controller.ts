@@ -2,7 +2,7 @@ import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/commo
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
-import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
+import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 import { RequestResetPassService } from './request-reset-pass.service';
 import { RequestResetPassDto } from 'src/dto/auth/request-reset-pass-dto';
 

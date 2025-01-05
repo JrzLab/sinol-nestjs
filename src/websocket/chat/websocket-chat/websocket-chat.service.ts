@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { WebsocketPrismaService } from 'src/prisma/websocket/websocketPrisma.service';
+import { WebsocketPrismaService } from 'src/prisma/websocketPrisma/websocket-prisma.service';
 
 @Injectable()
 export class WebsocketChatService {

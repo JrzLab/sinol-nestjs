@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { WebsocketPrismaService } from './websocketPrisma.service';
+import { WebsocketPrismaService } from './websocket-prisma.service';
 
 describe('WebsocketService', () => {
   let service: WebsocketPrismaService;

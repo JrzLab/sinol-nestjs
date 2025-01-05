@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { IToken, IVerifyToken } from 'src/utility/interfaces/interface-auth';
 import { AuthService } from 'src/auth/auth.service';
-import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
+import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 
 @Injectable()
 export class ResetPasswordService {

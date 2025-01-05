@@ -1,6 +1,6 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
+import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 import { AuthService } from 'src/auth/auth.service';
 import { IToken, IVerifyToken } from 'src/utility/interfaces/interface-auth';
 

@@ -1,6 +1,6 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Injectable } from '@nestjs/common';
-import { WebsocketPrismaService } from 'src/prisma/websocket/websocketPrisma.service';
+import { WebsocketPrismaService } from 'src/prisma/websocketPrisma/websocket-prisma.service';
 import { CreateMessageDto } from 'src/dto/websocket/send-message-dto';
 import { WebsocketSelfService } from 'src/websocket/websocket-self/websocket-self.service';
 

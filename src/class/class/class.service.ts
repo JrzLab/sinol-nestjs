@@ -1,15 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { ClassPrismaService } from 'src/prisma/class/classPrisma.service';
+import { Prisma } from '@prisma/client';
+import { ClassPrismaService } from 'src/prisma/classPrisma/class-prisma.service';
+
+type UserClassWithGroupClass = Prisma.userClassGetPayload<{
+  include: {
+    groupClass: {
+      select: {
+        id: true;
+        className: true;
+        description: true;
+        owner: { select: { email: true } };
+      };
+    };
+  };
+}>;
 
 @Injectable()
 export class ClassService {
   constructor(private readonly classPrismaService: ClassPrismaService) {}
 
   async addGClass(uid: string, className: string, description: string, email: string) {
-    return this.classPrismaService.addGClass({ className, description }, { email, userClassUid: uid });
+    const uClassData = await this.classPrismaService.getUClass({ uid });
+    return this.classPrismaService.addGClass({ className, description }, { email, userClassUid: uClassData.uid });
   }
 
-  async getUClass(email: string) {
+  async getUClass(email: string): Promise<UserClassWithGroupClass> {
     const uClassData = await this.classPrismaService.getUClass({ email });
     if (!uClassData) {
       await this.classPrismaService.addUClass({ email });

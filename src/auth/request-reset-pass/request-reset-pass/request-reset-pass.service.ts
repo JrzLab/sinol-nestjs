@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { IUserData } from 'src/utility/interfaces/interface-auth';
-import { UserPrismaService } from 'src/prisma/user/userPrisma.service';
+import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 
 @Injectable()
 export class RequestResetPassService {
