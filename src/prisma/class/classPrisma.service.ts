@@ -15,7 +15,7 @@ export class ClassPrismaService {
     return this.prismaService.groupClass.create({
       data: {
         className: data.className,
-        discription: data.description,
+        description: data.description,
         owner: {
           connect: {
             email: user.email,
@@ -38,7 +38,7 @@ export class ClassPrismaService {
           select: {
             id: true,
             className: true,
-            discription: true,
+            description: true,
             owner: { select: { email: true } },
           },
         },
