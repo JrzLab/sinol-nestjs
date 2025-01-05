@@ -5,11 +5,17 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ClassPrismaService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async addClass(user: { email: string; userClassUid: string }) {
+  async addUClass(user: { email: string }) {
+    return this.prismaService.userClass.create({
+      data: { user: { connect: { email: user.email } } },
+    });
+  }
+
+  async addGClass(data: { className: string; description: string }, user: { email: string; userClassUid: string }) {
     return this.prismaService.groupClass.create({
       data: {
-        className: 'Class 1',
-        discription: 'This is class 1',
+        className: data.className,
+        discription: data.description,
         owner: {
           connect: {
             email: user.email,
@@ -24,18 +30,26 @@ export class ClassPrismaService {
     });
   }
 
-  async getClass(user: { email: string }) {
+  async getUClass(user: { email: string }) {
     return await this.prismaService.userClass.findFirst({
       where: { user },
       include: {
         groupClass: {
           select: {
             id: true,
+            className: true,
             discription: true,
             owner: { select: { email: true } },
           },
         },
       },
+    });
+  }
+
+  async updateClass(where: { id: number }, data: { className: string; description: string }) {
+    return this.prismaService.groupClass.update({
+      where,
+      data,
     });
   }
 }

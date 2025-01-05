@@ -77,7 +77,7 @@ model userTask {
 model classSubject {
   id           Int        @id @default(autoincrement())
   title        String     @db.VarChar(255)
-  discription  String     @db.Text()
+  description  String     @db.Text()
   createdAt    DateTime   @default(now())
   editedAt     DateTime   @updatedAt
   groupClass   groupClass @relation(fields: [groupClassId], references: [id])
@@ -90,7 +90,7 @@ model groupClass {
   owner        user           @relation(fields: [ownerId], references: [id])
   ownerId      Int
   className    String         @db.VarChar(255)
-  discription  String         @db.VarChar(255)
+  description  String         @db.VarChar(255)
   userClass    userClass      @relation(fields: [userClassUid], references: [uid])
   userClassUid String
   classSubject classSubject[]
