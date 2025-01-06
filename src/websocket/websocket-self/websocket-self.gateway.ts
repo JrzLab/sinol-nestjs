@@ -21,19 +21,19 @@ export class WebsocketSelfGateway implements OnGatewayConnection, OnGatewayDisco
     if (clientIdentify) {
       const clinetCut = clientIdentify.split('@')[0];
       this.websocketSelfService.setClient(clinetCut, socket);
-      console.log(`${chalk.blueBright("[Joined]")} Client connected with clientId: ${clinetCut}`);
+      console.log(`${chalk.blueBright('[Joined]')} Client connected with clientId: ${clinetCut}`);
     } else {
-      console.log(`${chalk.blueBright("[Joined]")} Client connected without clientId`);
+      console.log(`${chalk.blueBright('[Joined]')} Client connected without clientId`);
     }
   }
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
     this.websocketSelfService.getAllClients().forEach((s, clientId) => {
       if (s.id === socket.id) {
-        console.log(`${chalk.redBright("[Leave]")} Client disconnected with clientId: ${clientId}`);
+        console.log(`${chalk.redBright('[Leave]')} Client disconnected with clientId: ${clientId}`);
         this.websocketSelfService.deleteClient(clientId);
       } else {
-        console.log(`${chalk.redBright("[Leave]")} Client disconnected without clientId`);
+        console.log(`${chalk.redBright('[Leave]')} Client disconnected without clientId`);
       }
     });
   }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { groupClass, Prisma } from '@prisma/client';
 import { ClassPrismaService } from 'src/prisma/classPrisma/class-prisma.service';
 
 type UserClassWithGroupClass = Prisma.userClassGetPayload<{
@@ -19,21 +19,32 @@ type UserClassWithGroupClass = Prisma.userClassGetPayload<{
 export class ClassService {
   constructor(private readonly classPrismaService: ClassPrismaService) {}
 
+  private formatClassData({ id, className, description, ownerId }: groupClass) {
+    return { id, className, description, ownerId };
+  }
+
   async addGClass(uid: string, className: string, description: string, email: string) {
-    const uClassData = await this.classPrismaService.getUClass({ uid });
-    return this.classPrismaService.addGClass({ className, description }, { email, userClassUid: uClassData.uid });
+    const { uid: userClassUid } = await this.classPrismaService.getUClass({ uid });
+    const classData = await this.classPrismaService.addGClass({ className, description }, { email, userClassUid });
+    return this.formatClassData(classData);
   }
 
   async getUClass(email: string): Promise<UserClassWithGroupClass> {
-    const uClassData = await this.classPrismaService.getUClass({ email });
+    let uClassData = await this.classPrismaService.getUClass({ email });
     if (!uClassData) {
       await this.classPrismaService.addUClass({ email });
-      return this.getUClass(email);
+      uClassData = await this.classPrismaService.getUClass({ email });
     }
     return uClassData;
   }
 
   async updateClass(id: number, className: string, description: string) {
-    return this.classPrismaService.updateClass({ id }, { className, description });
+    const classData = await this.classPrismaService.updateClass({ id }, { className, description });
+    return this.formatClassData(classData);
+  }
+
+  async deleteClass(id: number) {
+    const classData = await this.classPrismaService.deleteClass({ id });
+    return this.formatClassData(classData);
   }
 }

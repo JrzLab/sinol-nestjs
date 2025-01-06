@@ -4,9 +4,7 @@ import { VerifyTokenResetPassService } from './verify-token-reset-pass.service';
 
 @Controller('auth/verify-token-reset-pass')
 export class VerifyTokenResetPassController {
-  constructor(
-    private readonly verifyTokenResetPassService: VerifyTokenResetPassService,
-  ) {}
+  constructor(private readonly verifyTokenResetPassService: VerifyTokenResetPassService) {}
 
   @Post()
   async verifyTokenResetPass(@Body() body: VerifyTokenResetPassDto) {

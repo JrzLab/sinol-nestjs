@@ -1,15 +1,19 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class addSubjectDto {
-    @IsString()
-    @IsNotEmpty()
-    title: string;
+  @ApiProperty({ description: 'Title of the subject', example: 'Mathematics' })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
-    @IsString()
-    @IsNotEmpty()
-    description: string;
+  @ApiProperty({ description: 'Description of the subject', example: 'Mathematics is the study of numbers, shapes, and patterns' })
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    id: number;
+  @ApiProperty({ description: 'Id of the class', example: 1 })
+  @IsString()
+  @IsNotEmpty()
+  id: string;
 }

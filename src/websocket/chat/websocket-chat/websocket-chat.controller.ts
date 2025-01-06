@@ -1,9 +1,11 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetEmailDto } from 'src/dto/websocket/get-email-dto';
 import { GetMessageDto } from 'src/dto/websocket/get-message-dto';
 import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 import { WebsocketPrismaService } from 'src/prisma/websocketPrisma/websocket-prisma.service';
 
+@ApiTags('Websocket Chat')
 @Controller('websocket/chat')
 export class WebsocketChatController {
   constructor(
@@ -12,6 +14,10 @@ export class WebsocketChatController {
   ) {}
 
   @Post('create')
+  @ApiOperation({ summary: 'Create a new chat room' })
+  @ApiBody({ type: GetEmailDto })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Room created successfully' })
+  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Room creation failed because already exists' })
   async createChatRoom(@Body() data: GetEmailDto) {
     const { identifySender, identifyReciver } = data;
 
@@ -45,6 +51,10 @@ export class WebsocketChatController {
   }
 
   @Get('history/:idRoom')
+  @ApiOperation({ summary: 'Get chat history' })
+  @ApiParam({ name: 'idRoom', type: 'string', description: 'Room ID' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Chat history retrieved successfully' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Chat history not found' })
   async getChatHistory(@Param() data: GetMessageDto) {
     const { idRoom } = data;
     const chatHistory = await this.websocketService.getMessageAndChatRoom({ id: Number(idRoom) });

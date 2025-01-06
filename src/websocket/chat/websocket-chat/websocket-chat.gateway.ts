@@ -3,11 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { WebsocketPrismaService } from 'src/prisma/websocketPrisma/websocket-prisma.service';
 import { CreateMessageDto } from 'src/dto/websocket/send-message-dto';
 import { WebsocketSelfService } from 'src/websocket/websocket-self/websocket-self.service';
+import { ApiTags } from '@nestjs/swagger';
 
 /*
  * For Chat user
  */
 
+@ApiTags('Websocket Chat')
 @Injectable()
 @WebSocketGateway(Number(process.env.PORT_WS))
 export class WebsocketChatGateway {
@@ -16,6 +18,11 @@ export class WebsocketChatGateway {
     private readonly websocketSelfService: WebsocketSelfService,
   ) {}
 
+  /**
+   * Menghandle event `sendMessage` untuk mengirim pesan antar pengguna.
+   *
+   * @param data - Data pesan yang dikirim
+   */
   @SubscribeMessage('sendMessage')
   async handleMessage(@MessageBody() data: CreateMessageDto) {
     const { identifySender, identifyReciver, message, idRoom } = data;
@@ -24,10 +31,13 @@ export class WebsocketChatGateway {
       emailUser: identifySender,
       content: message,
     });
+
+    // Mengirim pesan ke klien yang relevan
     [identifySender, identifyReciver].forEach((id) => {
       try {
         this.websocketSelfService.getClient(id).emit('updateMessageClient', addMessage);
-      } catch (error) {}
+      } catch (error) {
+      }
     });
   }
 }

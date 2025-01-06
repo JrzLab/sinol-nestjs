@@ -33,7 +33,7 @@ export class ResetPasswordController {
       );
     }
 
-    const verifyToken = await this.resetPasswordService.verifyToken({ email, token });;
+    const verifyToken = await this.resetPasswordService.verifyToken({ email, token });
     if (verifyToken.success) {
       const hashPassword = await this.authService.hashText(password);
       const responseData = await this.userService.changePassword({ email }, { password: hashPassword });

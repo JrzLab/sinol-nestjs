@@ -8,7 +8,7 @@ export class SigninGoogleController {
 
   @Post()
   async signinGoogle(@Body() body: SigninGoogleDto) {
-    const { email, firstName, lastName, imageUrl } = body;
+    const { email, firstName } = body;
     try {
       if (!email || !firstName) {
         throw new HttpException(

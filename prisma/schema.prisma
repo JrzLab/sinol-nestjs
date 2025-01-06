@@ -63,8 +63,6 @@ model userClass {
 
 model userTask {
   id             Int          @id @default(autoincrement())
-  fileTask       fileTask     @relation(fields: [fileTaskId], references: [id])
-  fileTaskId     Int
   user           user         @relation(fields: [userId], references: [id])
   userId         Int
   classSubject   classSubject @relation(fields: [classSubjectId], references: [id])
@@ -72,6 +70,7 @@ model userTask {
   status         taskStatus
   createdAt      DateTime     @default(now())
   editedAt       DateTime     @updatedAt
+  fileTask       fileTask[]
 }
 
 model classSubject {
@@ -97,9 +96,11 @@ model groupClass {
 }
 
 model fileTask {
-  id       Int        @id @default(autoincrement())
-  fileName String     @db.VarChar(255)
-  userTask userTask[]
+  id          Int      @id @default(autoincrement())
+  fileName    String   @db.VarChar(255)
+  urlDownlaod String   @db.VarChar(255)
+  userTask    userTask @relation(fields: [userTaskId], references: [id])
+  userTaskId  Int
 }
 
 enum taskStatus {

@@ -1,16 +1,13 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param } from '@nestjs/common';
+import * as path from 'path';
+import { Controller, Get, Param, Res } from '@nestjs/common';
 import { AppService } from './app.service';
-import { UserPrismaService } from './prisma/userPrisma/user-prisma.service';
-import { ApiTags, ApiResponse, ApiParam, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { FindUserDto } from './dto/find-user-dto';
+import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { Response } from 'express';
 
-@ApiTags('Get Users')
+@ApiTags('App')
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly userService: UserPrismaService,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get Hello World' })
@@ -18,46 +15,13 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('user/:id')
-  @ApiOperation({ summary: 'Get user data by params ID' })
-  @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
-  async getUserData(@Param() params: { id: string }) {
-    const { id } = params;
-    return this.userService.findUserByIdentifier({ id: Number(id) });
-  }
-
-  @Get('users')
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Users data retrieved successfully' })
-  async getUsersData() {
-    const userData = await this.userService.findUsersData();
-    throw new HttpException(
-      {
-        code: HttpStatus.OK,
-        status: true,
-        message: 'Users data retrieved successfully',
-        data: userData.map((user) => ({ id: user.id, email: user.email, firstName: user.firstName })),
-      },
-      HttpStatus.OK,
-    );
-  }
-
-  @Get('findUser')
-  @ApiOperation({ summary: 'Find user by email' })
-  @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
-  @ApiBody({ type: FindUserDto })
-  async findUser(@Body() data: FindUserDto) {
-    const { email } = data;
-    const userData = await this.userService.findUserByIdentifier({ email });
-    throw new HttpException(
-      {
-        code: userData ? HttpStatus.OK : HttpStatus.NOT_FOUND,
-        status: !!userData,
-        message: userData ? 'User data retrieved successfully' : 'User not found',
-        data: userData ? { id: userData.id, email: userData.email, firstName: userData.firstName } : null,
-      },
-      userData ? HttpStatus.OK : HttpStatus.NOT_FOUND,
-    );
+  @Get('download/:idFolder/:fileName')
+  @ApiOperation({ summary: 'Download user file' })
+  @ApiParam({ name: 'idFolder', type: 'string', description: 'Folder ID' })
+  @ApiParam({ name: 'fileName', type: 'string', description: 'File Name' })
+  @ApiResponse({ status: 200, description: 'File downloaded successfully' })
+  downloadUserFile(@Param() params: { idFolder: string; fileName: string }, @Res() res: Response) {
+    const filePath = path.join(__dirname, `../fileTasks/${params.idFolder}/${params.fileName}`);
+    return res.download(filePath);
   }
 }

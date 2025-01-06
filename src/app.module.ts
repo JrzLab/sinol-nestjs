@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { WebsocketSelfModule } from './websocket/websocket-self.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ClassModule } from './class/class.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ClassModule } from './class/class.module';
     PrismaModule,
     WebsocketSelfModule,
     ClassModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

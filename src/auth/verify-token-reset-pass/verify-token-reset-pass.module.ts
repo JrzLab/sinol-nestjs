@@ -7,6 +7,6 @@ import { VerifyTokenResetPassService } from './verify-token-reset-pass/verify-to
 @Module({
   imports: [PrismaModule],
   providers: [AuthService, VerifyTokenResetPassService],
-  controllers: [VerifyTokenResetPassController]
+  controllers: [VerifyTokenResetPassController],
 })
 export class VerifyTokenResetPassModule {}

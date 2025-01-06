@@ -52,7 +52,7 @@ export class VerifyTokenResetPassService {
         return {
           code: HttpStatus.UNAUTHORIZED,
           success: false,
-          message: 'Invalid or expired token',
+          message: 'Invalid or expired token' + error.message,
           data: {},
         };
       }

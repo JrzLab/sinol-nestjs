@@ -63,4 +63,10 @@ export class ClassPrismaService {
       data,
     });
   }
+
+  async deleteClass(where: { id: number }) {
+    return this.prismaService.groupClass.delete({
+      where,
+    });
+  }
 }

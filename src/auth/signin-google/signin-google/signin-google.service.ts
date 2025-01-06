@@ -7,8 +7,8 @@ export class SigninGoogleService {
   constructor(private readonly userService: UserPrismaService) {}
 
   async fetchOrCreateUsers(data: ISigninGoogle) {
-    const { email, firstName, imageUrl, lastName } = data;
-    
+    const { email, firstName } = data;
+
     // Validasi input
     if (!email || !firstName) {
       return {
@@ -17,7 +17,7 @@ export class SigninGoogleService {
         data: {},
       };
     }
-    
+
     try {
       // Mencari pengguna berdasarkan email
       const userData = await this.userService.findUserByIdentifier({ email });
@@ -57,7 +57,6 @@ export class SigninGoogleService {
           loginAt: Math.floor(Date.now() / 1000),
         },
       };
-
     } catch (error) {
       return {
         success: false,
