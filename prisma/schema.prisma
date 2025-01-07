@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,86 +8,99 @@ datasource db {
 }
 
 model user {
-  id         Int           @id @default(autoincrement()) // Automatically increment the value when a new record is created
-  firstName  String        @db.VarChar(255)
-  lastName   String?       @db.VarChar(255)
+  id         Int           @id @default(autoincrement())
   email      String        @unique @db.VarChar(255)
   password   String?       @db.VarChar(255)
   tokenReset String?       @db.VarChar(400)
+  createdAt  DateTime      @default(now())
+  firstName  String        @db.VarChar(255)
+  lastName   String?       @db.VarChar(255)
   imageUrl   String?       @db.VarChar(255)
-  createdAt  DateTime      @default(now()) // Automatically set the current date and time when a new record is created
+  groupClass groupClass[]
   message    messageData[]
   roomChatA  roomChat[]    @relation("userA")
   roomChatB  roomChat[]    @relation("userB")
   userClass  userClass?
   userTask   userTask[]
-  groupClass groupClass[]
 }
 
 model roomChat {
   id        Int           @id @default(autoincrement())
   createdAt DateTime      @default(now())
   expiredAt DateTime?
-  userA     user          @relation("userA", fields: [userAId], references: [id])
-  userB     user          @relation("userB", fields: [userBId], references: [id])
   userAId   Int
   userBId   Int
   messages  messageData[]
+  userA     user          @relation("userA", fields: [userAId], references: [id])
+  userB     user          @relation("userB", fields: [userBId], references: [id])
+
+  @@index([userAId], map: "roomChat_userAId_fkey")
+  @@index([userBId], map: "roomChat_userBId_fkey")
 }
 
 model messageData {
   uid         String   @id @default(uuid())
-  roomChat    roomChat @relation(fields: [roomChatId], references: [id])
-  roomChatId  Int
-  sender      user     @relation(fields: [senderId], references: [id])
   senderId    Int
-  content     String   @db.Text()
+  content     String   @db.Text
+  roomChatId  Int
   messageTemp DateTime @default(now())
-}
+  roomChat    roomChat @relation(fields: [roomChatId], references: [id])
+  sender      user     @relation(fields: [senderId], references: [id])
 
-// This is for the group class
+  @@index([roomChatId], map: "messageData_roomChatId_fkey")
+  @@index([senderId], map: "messageData_senderId_fkey")
+}
 
 model userClass {
   uid        String       @id @default(uuid())
-  user       user         @relation(fields: [userId], references: [id])
   userId     Int          @unique
-  groupClass groupClass[]
   createdAt  DateTime     @default(now())
+  groupClass groupClass[]
+  user       user         @relation(fields: [userId], references: [id])
 }
 
 model userTask {
   id             Int          @id @default(autoincrement())
-  fileTask       fileTask     @relation(fields: [fileTaskId], references: [id])
   fileTaskId     Int
-  user           user         @relation(fields: [userId], references: [id])
-  userId         Int
-  classSubject   classSubject @relation(fields: [classSubjectId], references: [id])
-  classSubjectId Int
   status         taskStatus
   createdAt      DateTime     @default(now())
   editedAt       DateTime     @updatedAt
+  classSubjectId Int
+  userId         Int
+  classSubject   classSubject @relation(fields: [classSubjectId], references: [id])
+  fileTask       fileTask     @relation(fields: [fileTaskId], references: [id])
+  user           user         @relation(fields: [userId], references: [id])
+
+  @@index([classSubjectId], map: "userTask_classSubjectId_fkey")
+  @@index([fileTaskId], map: "userTask_fileTaskId_fkey")
+  @@index([userId], map: "userTask_userId_fkey")
 }
 
 model classSubject {
   id           Int        @id @default(autoincrement())
   title        String     @db.VarChar(255)
-  discription  String     @db.Text()
+  discription  String     @db.Text
   createdAt    DateTime   @default(now())
   editedAt     DateTime   @updatedAt
-  groupClass   groupClass @relation(fields: [groupClassId], references: [id])
   groupClassId Int
+  groupClass   groupClass @relation(fields: [groupClassId], references: [id])
   userTask     userTask[]
+
+  @@index([groupClassId], map: "classSubject_groupClassId_fkey")
 }
 
 model groupClass {
   id           Int            @id @default(autoincrement())
-  owner        user           @relation(fields: [ownerId], references: [id])
-  ownerId      Int
   className    String         @db.VarChar(255)
   discription  String         @db.VarChar(255)
-  userClass    userClass      @relation(fields: [userClassUid], references: [uid])
   userClassUid String
+  ownerId      Int
   classSubject classSubject[]
+  owner        user           @relation(fields: [ownerId], references: [id])
+  userClass    userClass      @relation(fields: [userClassUid], references: [uid])
+
+  @@index([ownerId], map: "groupClass_ownerId_fkey")
+  @@index([userClassUid], map: "groupClass_userClassUid_fkey")
 }
 
 model fileTask {

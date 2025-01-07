@@ -20,10 +20,14 @@ export class RequestResetPassService {
       .replace(/\[Product Name\]/g, 'Sinol')
       .replace(/\{{action_url}}/g, `http://localhost:3000/auth/forgot-password?profile=${jwtToken}&userId=${userData.email}`);
 
-    await this.mailService.sendMail({
-      to: userData.email, // list of receivers
-      subject: 'Reset Password', // Subject line
-      html: htmlContent, // html body
-    });
+    try {
+      await this.mailService.sendMail({
+        to: userData.email, // list of receivers
+        subject: 'Reset Password', // Subject line
+        html: htmlContent, // html body
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
