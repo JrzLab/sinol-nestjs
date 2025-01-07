@@ -26,7 +26,7 @@ import { VerifyTokenResetPassModule } from './verify-token-reset-pass/verify-tok
           },
         },
         defaults: {
-          from: `Sinol <no-reply@sinol.co.id>`,
+          from: `Sinol <no-reply@${configService.get('EMAIL_USER')}>`,
         },
       }),
     }),
