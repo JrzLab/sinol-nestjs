@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Controller, Get, Param, Query, Res } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { Response } from 'express';
 
 @ApiTags('App')
@@ -15,13 +15,17 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('download/:idFolder/:fileName')
+  @Get('file/:idFolder/:fileName')
   @ApiOperation({ summary: 'Download user file' })
   @ApiParam({ name: 'idFolder', type: 'string', description: 'Folder ID' })
   @ApiParam({ name: 'fileName', type: 'string', description: 'File Name' })
+  @ApiQuery({ name: 'download', type: 'string', description: 'Download file' })
   @ApiResponse({ status: 200, description: 'File downloaded successfully' })
-  downloadUserFile(@Param() params: { idFolder: string; fileName: string }, @Res() res: Response) {
-    const filePath = path.join(__dirname, `../fileTasks/${params.idFolder}/${params.fileName}`);
-    return res.download(filePath);
+  downloadUserFile(@Param() params: { idFolder: string; fileName: string }, @Query() query: { download: string }, @Res() res: Response) {
+    const filePath = path.join(
+      __dirname,
+      `../files/${params.idFolder}/${params.fileName === 'profile.webp' ? 'profile.webp' : `tasks/${params.fileName}`}`,
+    );
+    return query.download === '1' ? res.download(filePath) : res.sendFile(filePath);
   }
 }

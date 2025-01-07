@@ -4,12 +4,16 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AddTaskDto } from 'src/dto/class/add-task-dto';
 import { getSubjectDto } from 'src/dto/class/get-subject-dto';
 import { getClassDto } from 'src/dto/class/get-class-dto';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 @Controller('class/task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Get('/:id')
+  @ApiOperation({ summary: 'Get task by ID' })
+  @ApiParam({ name: 'id', type: 'string', description: 'Task ID' })
+  @ApiResponse({ status: 200, description: 'Task retrieved successfully' })
   async getTask(@Param() data: getSubjectDto, @Query() query: getClassDto) {
     const uTaskData = await this.taskService.getTask(query.email, Number(data.id));
     throw new HttpException(
@@ -29,6 +33,9 @@ export class TaskController {
   }
 
   @Post('upload')
+  @ApiOperation({ summary: 'Upload task file' })
+  @ApiBody({ type: AddTaskDto })
+  @ApiResponse({ status: 201, description: 'File uploaded successfully' })
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@Body() body: AddTaskDto, @UploadedFile() file: Express.Multer.File) {
     throw new HttpException(

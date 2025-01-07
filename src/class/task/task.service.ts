@@ -24,6 +24,10 @@ export class TaskService {
   async addTask(email: string, classSubject: number, file: Express.Multer.File) {
     const uTaskData = await this.taskPrismaService.getTask({ email, classSubject });
     const fileName = await this.taskPrismaService.createFileFolder({ email, file });
-    return this.taskPrismaService.addFileTask({ fileName, userTaskId: uTaskData.id, url: `/download/${uTaskData.id}/${fileName.split('/')[3]}` });
+    return this.taskPrismaService.addFileTask({
+      fileName,
+      userTaskId: uTaskData.id,
+      url: `/file/${uTaskData.id}/${fileName.split('/')[4]}?download=1`,
+    });
   }
 }

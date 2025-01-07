@@ -14,20 +14,21 @@ datasource db {
 }
 
 model user {
-  id         Int           @id @default(autoincrement()) // Automatically increment the value when a new record is created
-  firstName  String        @db.VarChar(255)
-  lastName   String?       @db.VarChar(255)
-  email      String        @unique @db.VarChar(255)
-  password   String?       @db.VarChar(255)
-  tokenReset String?       @db.VarChar(400)
-  imageUrl   String?       @db.VarChar(255)
-  createdAt  DateTime      @default(now()) // Automatically set the current date and time when a new record is created
-  message    messageData[]
-  roomChatA  roomChat[]    @relation("userA")
-  roomChatB  roomChat[]    @relation("userB")
-  userClass  userClass?
-  userTask   userTask[]
-  groupClass groupClass[]
+  id          Int           @id @default(autoincrement()) // Automatically increment the value when a new record is created
+  firstName   String        @db.VarChar(255)
+  lastName    String?       @db.VarChar(255)
+  email       String        @unique @db.VarChar(255)
+  password    String?       @db.VarChar(255)
+  tokenReset  String?       @db.VarChar(400)
+  imageUrl    String?       @db.VarChar(255)
+  createdAt   DateTime      @default(now()) // Automatically set the current date and time when a new record is created
+  message     messageData[]
+  roomChatA   roomChat[]    @relation("userA")
+  roomChatB   roomChat[]    @relation("userB")
+  userClass   userClass?
+  userTask    userTask[]
+  groupClass  groupClass[]
+  fileProfile fileProfile[]
 }
 
 model roomChat {
@@ -96,11 +97,19 @@ model groupClass {
 }
 
 model fileTask {
-  id          Int      @id @default(autoincrement())
-  fileName    String   @db.VarChar(255)
-  urlDownlaod String   @db.VarChar(255)
-  userTask    userTask @relation(fields: [userTaskId], references: [id])
-  userTaskId  Int
+  id         Int      @id @default(autoincrement())
+  fileName   String   @db.VarChar(255)
+  url        String   @db.VarChar(255)
+  userTask   userTask @relation(fields: [userTaskId], references: [id])
+  userTaskId Int
+}
+
+model fileProfile {
+  id       Int    @id @default(autoincrement())
+  fileName String @db.VarChar(255)
+  url      String @db.VarChar(255)
+  user     user   @relation(fields: [userId], references: [id])
+  userId   Int
 }
 
 enum taskStatus {

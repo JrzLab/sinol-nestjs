@@ -12,7 +12,7 @@ export class TaskPrismaService {
 
   async createFileFolder(data: { email: string; file: Express.Multer.File }) {
     const userData = await this.userPrismaService.findUserByIdentifier({ email: data.email });
-    const folderPath = `./fileTasks/${userData.id}`;
+    const folderPath = `./files/${userData.id}/tasks`;
     if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
     const filesData = fs.readdirSync(folderPath);
     const fileName = filesData.find((file) => file === `${data.file.originalname}`)
@@ -22,16 +22,10 @@ export class TaskPrismaService {
     return fileName;
   }
 
-  async getTask(where: { email: string; classSubject: number }) {
+  async getTask(where: { email?: string; classSubject?: number }) {
+    const condition = where.email ? { user: { email: where.email } } : { classSubject: { id: where.classSubject } };
     return this.prismaService.userTask.findFirst({
-      where: {
-        user: {
-          email: where.email,
-        },
-        classSubject: {
-          id: where.classSubject,
-        },
-      },
+      where: condition,
       include: {
         fileTask: true,
       },
@@ -60,7 +54,7 @@ export class TaskPrismaService {
     return this.prismaService.fileTask.create({
       data: {
         fileName: data.fileName,
-        urlDownlaod: data.url,
+        url: data.url,
         userTask: {
           connect: {
             id: data.userTaskId,
