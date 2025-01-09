@@ -3,15 +3,17 @@ import { SubjectService } from './subject.service';
 import { getSubjectDto } from 'src/dto/class/get-subject-dto';
 import { addSubjectDto } from 'src/dto/class/add-subject-dto';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { updateSubjectDto } from 'src/dto/class/update-subject-dto';
+import { deleteSubjectDto } from 'src/dto/class/delete-subject-dto';
 
 @ApiTags('Class')
 @Controller('class/subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
-  @Get('/:id')
-  @ApiOperation({ summary: 'Get subjects by class id' })
-  @ApiParam({ name: 'id', type: 'string', description: 'Class ID' })
+  @Get('/:uid')
+  @ApiOperation({ summary: 'Get subjects by class uid' })
+  @ApiParam({ name: 'uid', type: 'string', description: 'User Class UID' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Get subject successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Get subject failed or no data' })
   async getSubjects(@Param() params: getSubjectDto) {
@@ -20,7 +22,7 @@ export class SubjectController {
         code: HttpStatus.OK,
         success: true,
         message: 'Subjects fetched successfully',
-        data: await this.subjectService.getSubjects(Number(params.id)),
+        data: await this.subjectService.getSubjects(params.uid),
       },
       HttpStatus.OK,
     );
@@ -37,7 +39,7 @@ export class SubjectController {
         code: HttpStatus.OK,
         success: true,
         message: 'Subject created successfully',
-        data: await this.subjectService.addSubject(body.title, body.description, Number(body.id)),
+        data: await this.subjectService.addSubject(body.title, body.description, body.uid),
       },
       HttpStatus.OK,
     );
@@ -45,10 +47,10 @@ export class SubjectController {
 
   @Put()
   @ApiOperation({ summary: 'Edit a subject' })
-  @ApiBody({ type: addSubjectDto })
+  @ApiBody({ type: updateSubjectDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Subject updated successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject update failed' })
-  async editSubject(@Body() body: addSubjectDto) {
+  async editSubject(@Body() body: updateSubjectDto) {
     throw new HttpException(
       {
         code: HttpStatus.OK,
@@ -65,7 +67,7 @@ export class SubjectController {
   @ApiParam({ name: 'id', type: 'string', description: 'Subject ID' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Subject deleted successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject deletion failed' })
-  async deleteSubject(@Param() params: getSubjectDto) {
+  async deleteSubject(@Param() params: deleteSubjectDto) {
     throw new HttpException(
       {
         code: HttpStatus.OK,

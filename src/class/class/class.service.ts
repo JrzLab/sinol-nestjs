@@ -6,7 +6,7 @@ type UserClassWithGroupClass = Prisma.userClassGetPayload<{
   include: {
     groupClass: {
       select: {
-        id: true;
+        uid: true;
         className: true;
         description: true;
         owner: { select: { email: true } };
@@ -19,8 +19,8 @@ type UserClassWithGroupClass = Prisma.userClassGetPayload<{
 export class ClassService {
   constructor(private readonly classPrismaService: ClassPrismaService) {}
 
-  private formatClassData({ id, className, description, ownerId }: groupClass) {
-    return { id, className, description, ownerId };
+  private formatClassData({ uid, className, description, ownerId }: groupClass) {
+    return { uid: uid.split('-')[0], className, description, ownerId };
   }
 
   async addGClass(uid: string, className: string, description: string, email: string) {
@@ -30,21 +30,21 @@ export class ClassService {
   }
 
   async getUClass(email: string): Promise<UserClassWithGroupClass> {
-    let uClassData = await this.classPrismaService.getUClass({ email });
+    const uClassData = await this.classPrismaService.getUClass({ email });
     if (!uClassData) {
       await this.classPrismaService.addUClass({ email });
-      uClassData = await this.classPrismaService.getUClass({ email });
+      return this.getUClass(email);
     }
     return uClassData;
   }
 
-  async updateClass(id: number, className: string, description: string) {
-    const classData = await this.classPrismaService.updateClass({ id }, { className, description });
+  async updateClass(uid: string, className: string, description: string) {
+    const classData = await this.classPrismaService.updateClass({ uid }, { className, description });
     return this.formatClassData(classData);
   }
 
-  async deleteClass(id: number) {
-    const classData = await this.classPrismaService.deleteClass({ id });
+  async deleteClass(uid: string) {
+    const classData = await this.classPrismaService.deleteClass({ uid });
     return this.formatClassData(classData);
   }
 }

@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as sharp from 'sharp';
 import { Injectable } from '@nestjs/common';
 import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
+import { user } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -14,15 +15,19 @@ export class UserService {
     return `/file/${id}/profile.webp?download=0`;
   }
 
+  private formatResponse(user: user) {
+    return { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, imageUrl: user.imageUrl };
+  }
+
   async findAllUsers() {
     const usersData = await this.userPrismaService.findUsersData();
-    return usersData.map(({ id, email, firstName, lastName, imageUrl }) => ({ id, email, firstName, lastName, imageUrl }));
+    return usersData.map(this.formatResponse);
   }
 
   async findUser(id?: string, email?: string) {
     const condition = id ? { id: Number(id) } : { email };
     const userData = await this.userPrismaService.findUserByIdentifier(condition);
-    return { id: userData.id, email: userData.email, firstName: userData.firstName, lastName: userData.lastName, imageUrl: userData.imageUrl };
+    return this.formatResponse(userData);
   }
 
   async changeProfilePicture(email: string, file: Express.Multer.File) {
@@ -32,5 +37,10 @@ export class UserService {
     return {
       linkProfile,
     };
+  }
+
+  async updateUser(email: string, firstName: string, lastName: string, emailChange: string) {
+    const profileData = await this.userPrismaService.updateProfile({ email }, { firstName, lastName, email: emailChange });
+    return this.formatResponse(profileData);
   }
 }

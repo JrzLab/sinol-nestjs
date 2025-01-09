@@ -5,18 +5,39 @@ import { PrismaService } from '../prisma.service';
 export class SubjectPrismaService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getSubject(where: { groupClass: { id: number } }) {
+  async getSubject(where: { groupClass: { uid: string } }) {
     return this.prismaService.classSubject.findMany({
-      where,
+      where: {
+        groupClass: {
+          uid: {
+            contains: where.groupClass.uid,
+          },
+        },
+      },
       orderBy: {
         createdAt: 'desc',
       },
     });
   }
 
-  async addSubject(data: { title: string; description: string; groupClass: { connect: { id: number } } }) {
+  async addSubject(data: { title: string; description: string; groupClass: { uid: string } }) {
+    const classGroupData = await this.prismaService.groupClass.findFirst({
+      where: {
+        uid: {
+          contains: data.groupClass.uid,
+        },
+      },
+    });
     return this.prismaService.classSubject.create({
-      data,
+      data: {
+        title: data.title,
+        description: data.description,
+        groupClass: {
+          connect: {
+            uid: classGroupData.uid,
+          },
+        },
+      },
     });
   }
 

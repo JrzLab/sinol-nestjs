@@ -27,7 +27,12 @@ export class ClassController {
           uid: uClassData.uid.split('-')[0],
           userId: uClassData.userId,
           createdAt: uClassData.createdAt,
-          groupClass: uClassData.groupClass,
+          groupClass: uClassData.groupClass.map((groupClass) => ({
+            uid: groupClass.uid.split('-')[0],
+            className: groupClass.className,
+            description: groupClass.description,
+            owner: groupClass.owner.email,
+          })),
         },
       },
       HttpStatus.OK,
@@ -58,21 +63,21 @@ export class ClassController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class updated successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class update failed' })
   async updateClass(@Body() body: updateClassDto) {
-    const { id, className, description } = body;
+    const { uid, className, description } = body;
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Class updated successfully',
-        data: await this.classService.updateClass(id, className, description),
+        data: await this.classService.updateClass(uid, className, description),
       },
       HttpStatus.OK,
     );
   }
 
-  @Delete('/:id')
+  @Delete('/:uid')
   @ApiOperation({ summary: 'Delete a class' })
-  @ApiParam({ name: 'id', type: 'string', description: 'Class ID' })
+  @ApiParam({ name: 'uid', type: 'string', description: 'Class UID' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class deleted successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class deletion failed' })
   async deleteClass(@Param() params: deleteClassDto) {
@@ -81,7 +86,7 @@ export class ClassController {
         code: HttpStatus.OK,
         success: true,
         message: 'Class deleted successfully',
-        data: await this.classService.deleteClass(Number(params.id)),
+        data: await this.classService.deleteClass(params.uid),
       },
       HttpStatus.OK,
     );

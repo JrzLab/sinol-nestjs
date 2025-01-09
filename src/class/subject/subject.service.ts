@@ -10,16 +10,16 @@ export class SubjectService {
     return { id, title, description };
   }
 
-  async getSubjects(id: number) {
-    const subjectDatas = await this.subjectPrismaService.getSubject({ groupClass: { id } });
+  async getSubjects(uid: string) {
+    const subjectDatas = await this.subjectPrismaService.getSubject({ groupClass: { uid } });
     return subjectDatas.map(this.formatSubjectData);
   }
 
-  async addSubject(title: string, description: string, id: number) {
+  async addSubject(title: string, description: string, uid: string) {
     const subjectData = await this.subjectPrismaService.addSubject({
       title,
       description,
-      groupClass: { connect: { id } },
+      groupClass: { uid },
     });
     return this.formatSubjectData(subjectData);
   }

@@ -14,20 +14,20 @@ datasource db {
 }
 
 model user {
-  id          Int           @id @default(autoincrement()) // Automatically increment the value when a new record is created
-  firstName   String        @db.VarChar(255)
-  lastName    String?       @db.VarChar(255)
-  email       String        @unique @db.VarChar(255)
-  password    String?       @db.VarChar(255)
-  tokenReset  String?       @db.VarChar(400)
-  imageUrl    String?       @db.VarChar(255)
-  createdAt   DateTime      @default(now()) // Automatically set the current date and time when a new record is created
-  message     messageData[]
-  roomChatA   roomChat[]    @relation("userA")
-  roomChatB   roomChat[]    @relation("userB")
-  userClass   userClass?
-  userTask    userTask[]
-  groupClass  groupClass[]
+  id         Int           @id @default(autoincrement()) // Automatically increment the value when a new record is created
+  firstName  String        @db.VarChar(255)
+  lastName   String?       @db.VarChar(255)
+  email      String        @unique @db.VarChar(255)
+  password   String?       @db.VarChar(255)
+  tokenReset String?       @db.VarChar(400)
+  imageUrl   String?       @db.VarChar(255)
+  createdAt  DateTime      @default(now()) // Automatically set the current date and time when a new record is created
+  message    messageData[]
+  roomChatA  roomChat[]    @relation("userA")
+  roomChatB  roomChat[]    @relation("userB")
+  userClass  userClass?
+  userTask   userTask[]
+  groupClass groupClass[]
 }
 
 model roomChat {
@@ -74,18 +74,18 @@ model userTask {
 }
 
 model classSubject {
-  id           Int        @id @default(autoincrement())
-  title        String     @db.VarChar(255)
-  description  String     @db.Text()
-  createdAt    DateTime   @default(now())
-  editedAt     DateTime   @updatedAt
-  groupClass   groupClass @relation(fields: [groupClassId], references: [id])
-  groupClassId Int
-  userTask     userTask[]
+  id            Int        @id @default(autoincrement())
+  title         String     @db.VarChar(255)
+  description   String     @db.Text()
+  createdAt     DateTime   @default(now())
+  editedAt      DateTime   @updatedAt
+  groupClass    groupClass @relation(fields: [groupClassUid], references: [uid])
+  groupClassUid String
+  userTask      userTask[]
 }
 
 model groupClass {
-  id           Int            @id @default(autoincrement())
+  uid          String         @id @default(uuid())
   owner        user           @relation(fields: [ownerId], references: [id])
   ownerId      Int
   className    String         @db.VarChar(255)

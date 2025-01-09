@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class getSubjectDto {
-  @ApiProperty({ description: 'Class uid', example: '123hui123' })
+export class deleteSubjectDto {
+  @ApiProperty({ description: 'id of the subject', example: '1' })
   @IsString()
   @IsNotEmpty()
-  uid: string;
+  id: string;
 }

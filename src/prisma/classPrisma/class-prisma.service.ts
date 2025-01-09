@@ -47,7 +47,7 @@ export class ClassPrismaService {
       include: {
         groupClass: {
           select: {
-            id: true,
+            uid: true,
             className: true,
             description: true,
             owner: { select: { email: true } },
@@ -57,16 +57,34 @@ export class ClassPrismaService {
     });
   }
 
-  async updateClass(where: { id: number }, data: { className: string; description: string }) {
+  async updateClass(where: { uid: string }, data: { className: string; description: string }) {
+    const groupClassData = await this.prismaService.groupClass.findFirst({
+      where: {
+        uid: {
+          contains: where.uid,
+        },
+      },
+    });
     return this.prismaService.groupClass.update({
-      where,
+      where: {
+        uid: groupClassData.uid,
+      },
       data,
     });
   }
 
-  async deleteClass(where: { id: number }) {
+  async deleteClass(where: { uid: string }) {
+    const groupClassData = await this.prismaService.groupClass.findFirst({
+      where: {
+        uid: {
+          contains: where.uid,
+        },
+      },
+    });
     return this.prismaService.groupClass.delete({
-      where,
+      where: {
+        uid: groupClassData.uid,
+      },
     });
   }
 }

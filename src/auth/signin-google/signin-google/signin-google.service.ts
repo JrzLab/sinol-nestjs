@@ -17,13 +17,13 @@ export class SigninGoogleService {
 
     https.get(url, (response) => {
       if (response.statusCode === 200) {
-      const chunks: Uint8Array[] = [];
-      response.on('data', (chunk) => chunks.push(chunk));
-      response.on('end', async () => {
-        const buffer = Buffer.concat(chunks);
-        const bufferImage = await sharp(buffer).webp({ quality: 100 }).toBuffer();
-        fs.writeFileSync(filePath, bufferImage);
-      });
+        const chunks: Uint8Array[] = [];
+        response.on('data', (chunk) => chunks.push(chunk));
+        response.on('end', async () => {
+          const buffer = Buffer.concat(chunks);
+          const bufferImage = await sharp(buffer).webp({ quality: 100 }).toBuffer();
+          fs.writeFileSync(filePath, bufferImage);
+        });
       }
     });
 
@@ -48,7 +48,7 @@ export class SigninGoogleService {
 
       // Jika pengguna tidak ditemukan, buat pengguna baru
       if (!userData) {
-        const user = await this.userService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: "" });
+        const user = await this.userService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: '' });
         const linkProfile = await this.downloadAndSave(user, imageUrl);
         await this.userService.addProfilePicture({ email }, { imageUrl: linkProfile });
 
