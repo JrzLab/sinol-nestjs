@@ -1,6 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { FindUserDto } from 'src/dto/user/find-user-dto';
 import { getUserDto } from 'src/dto/user/get-user-dto';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -10,40 +9,6 @@ import { addProfileDto } from 'src/dto/user/add-profile-dto';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @Get('/:id')
-  @ApiOperation({ summary: 'Get user data by params ID' })
-  @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
-  async getUserData(@Param() params: getUserDto) {
-    const userData = await this.userService.findUser(params.id, '');
-    throw new HttpException(
-      {
-        code: userData ? HttpStatus.OK : HttpStatus.NOT_FOUND,
-        status: !!userData,
-        message: userData ? 'User data retrieved successfully' : 'User not found',
-        data: userData ?? {},
-      },
-      userData ? HttpStatus.OK : HttpStatus.NOT_FOUND,
-    );
-  }
-
-  @Get('findUser')
-  @ApiOperation({ summary: 'Find user by email' })
-  @ApiBody({ type: FindUserDto })
-  @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
-  async findUser(@Body() data: FindUserDto) {
-    const userData = await this.userService.findUser('', data.email);
-    throw new HttpException(
-      {
-        code: userData ? HttpStatus.OK : HttpStatus.NOT_FOUND,
-        status: !!userData,
-        message: userData ? 'User data retrieved successfully' : 'User not found',
-        data: userData ?? {},
-      },
-      userData ? HttpStatus.OK : HttpStatus.NOT_FOUND,
-    );
-  }
 
   @Get('all')
   @ApiOperation({ summary: 'Get all users' })
@@ -60,19 +25,20 @@ export class UserController {
     );
   }
 
-  @Get('change-profile/:id')
-  @ApiOperation({ summary: 'Get change profile picture' })
-  @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'Get profile picture' })
-  async getChangeProfile(@Param() params: getUserDto) {
+  @Get('/:email')
+  @ApiOperation({ summary: 'Get user data by params ID' })
+  @ApiParam({ name: 'name', type: 'string', description: 'User Email' })
+  @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
+  async getUserData(@Param() params: getUserDto) {
+    const userData = await this.userService.findUser('', params.email);
     throw new HttpException(
       {
-        code: HttpStatus.OK,
-        status: true,
-        message: 'Get profile picture',
-        data: await this.userService.getChangeProfile(params.id),
+        code: userData ? HttpStatus.OK : HttpStatus.NOT_FOUND,
+        status: !!userData,
+        message: userData ? 'User data retrieved successfully' : 'User not found',
+        data: userData ?? {},
       },
-      HttpStatus.OK,
+      userData ? HttpStatus.OK : HttpStatus.NOT_FOUND,
     );
   }
 

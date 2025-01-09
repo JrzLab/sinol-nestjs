@@ -1,3 +1,13 @@
-import { getSubjectDto } from '../class/get-subject-dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export class getUserDto extends getSubjectDto {}
+export class getUserDto {
+  @ApiProperty({
+    description: 'Email of the user (either one is required)',
+    example: 'user@example.com',
+  })
+  @IsString()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}

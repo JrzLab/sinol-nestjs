@@ -28,7 +28,6 @@ model user {
   userClass   userClass?
   userTask    userTask[]
   groupClass  groupClass[]
-  fileProfile fileProfile[]
 }
 
 model roomChat {
@@ -102,14 +101,6 @@ model fileTask {
   url        String   @db.VarChar(255)
   userTask   userTask @relation(fields: [userTaskId], references: [id])
   userTaskId Int
-}
-
-model fileProfile {
-  id       Int    @id @default(autoincrement())
-  fileName String @db.VarChar(255)
-  url      String @db.VarChar(255)
-  user     user   @relation(fields: [userId], references: [id])
-  userId   Int
 }
 
 enum taskStatus {

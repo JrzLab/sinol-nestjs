@@ -1,3 +1,3 @@
-import { FindUserDto } from './find-user-dto';
+import { getUserDto } from './get-user-dto';
 
-export class addProfileDto extends FindUserDto {}
+export class addProfileDto extends getUserDto {}

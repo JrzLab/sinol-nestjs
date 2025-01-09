@@ -9,49 +9,40 @@ export class SigninGoogleController {
   @Post()
   async signinGoogle(@Body() body: SigninGoogleDto) {
     const { email, firstName } = body;
-    try {
-      if (!email || !firstName) {
-        throw new HttpException(
-          {
-            code: HttpStatus.BAD_REQUEST,
-            success: false,
-            message: 'Email and First Name are required',
-            data: {},
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
 
-      const result = await this.signinGoogleService.fetchOrCreateUsers(body);
+    if (!email || !firstName) {
+      throw new HttpException(
+        {
+          code: HttpStatus.BAD_REQUEST,
+          success: false,
+          message: 'Email and First Name are required',
+          data: {},
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-      if (result.success) {
-        return {
+    const result = await this.signinGoogleService.fetchOrCreateUsers(body);
+
+    if (result.success) {
+      throw new HttpException(
+        {
           code: HttpStatus.OK,
           success: true,
           message: result.message,
           data: result.data,
-        };
-      } else {
-        throw new HttpException(
-          {
-            code: HttpStatus.BAD_REQUEST,
-            success: false,
-            message: result.message,
-            data: result.data,
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    } catch (error) {
-      console.log(error);
+        },
+        HttpStatus.OK,
+      );
+    } else {
       throw new HttpException(
         {
-          code: HttpStatus.INTERNAL_SERVER_ERROR,
+          code: HttpStatus.BAD_REQUEST,
           success: false,
-          message: error.message || 'Internal Server Error',
-          data: {},
+          message: result.message,
+          data: result.data,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }

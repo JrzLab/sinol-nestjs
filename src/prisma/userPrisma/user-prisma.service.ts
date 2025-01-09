@@ -52,36 +52,10 @@ export class UserPrismaService {
     return this.create({ ...data, password: '' });
   }
 
-  async getProfilePicture(where: { id?: number; email?: string }) {
-    const condition = where.id ? { id: where.id } : { email: where.email };
-    return this.prismaService.fileProfile.findFirst({
-      where: {
-        user: condition,
-      },
+  async addProfilePicture(where: { email: string }, data: { imageUrl: string }) {
+    return this.prismaService.user.update({
+      where,
+      data,
     });
-  }
-
-  async addProfilePicture(where: { email: string }, data: { fileName: string; imageUrl: string }) {
-    const profileData = await this.getProfilePicture(where);
-    if (profileData) {
-      return this.prismaService.fileProfile.update({
-        where: { id: profileData.id },
-        data: {
-          url: data.imageUrl,
-        },
-      });
-    } else {
-      return this.prismaService.fileProfile.create({
-        data: {
-          fileName: data.fileName,
-          url: data.imageUrl,
-          user: {
-            connect: {
-              email: where.email,
-            },
-          },
-        },
-      });
-    }
   }
 }

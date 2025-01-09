@@ -7,7 +7,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/s
 @ApiTags('Class')
 @Controller('class/subject')
 export class SubjectController {
-  constructor(private readonly subjuctService: SubjectService) {}
+  constructor(private readonly subjectService: SubjectService) {}
 
   @Get('/:id')
   @ApiOperation({ summary: 'Get subjects by class id' })
@@ -20,7 +20,7 @@ export class SubjectController {
         code: HttpStatus.OK,
         success: true,
         message: 'Subjects fetched successfully',
-        data: await this.subjuctService.getSubjects(Number(params.id)),
+        data: await this.subjectService.getSubjects(Number(params.id)),
       },
       HttpStatus.OK,
     );
@@ -37,7 +37,7 @@ export class SubjectController {
         code: HttpStatus.OK,
         success: true,
         message: 'Subject created successfully',
-        data: await this.subjuctService.addSubject(body.title, body.description, Number(body.id)),
+        data: await this.subjectService.addSubject(body.title, body.description, Number(body.id)),
       },
       HttpStatus.OK,
     );
@@ -54,7 +54,7 @@ export class SubjectController {
         code: HttpStatus.OK,
         success: true,
         message: 'Subject updated successfully',
-        data: await this.subjuctService.editSubject(body.title, body.description, Number(body.id)),
+        data: await this.subjectService.editSubject(body.title, body.description, Number(body.id)),
       },
       HttpStatus.OK,
     );
@@ -71,7 +71,7 @@ export class SubjectController {
         code: HttpStatus.OK,
         success: true,
         message: 'Subject deleted successfully',
-        data: await this.subjuctService.deleteSubject(Number(params.id)),
+        data: await this.subjectService.deleteSubject(Number(params.id)),
       },
       HttpStatus.OK,
     );
