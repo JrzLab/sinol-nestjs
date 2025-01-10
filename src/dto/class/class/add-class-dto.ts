@@ -1,13 +1,8 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-import { getClassDto } from './get-class-dto';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { getClassDto } from './get-class-dto';
 
 export class addClassDto extends getClassDto {
-  @ApiProperty({ description: 'Unique identifier for the class', example: 'n1jkbiu2b1' })
-  @IsString()
-  @IsNotEmpty()
-  uid: string;
-
   @ApiProperty({ description: 'Name of the class', example: 'Mathematics' })
   @IsString()
   @IsNotEmpty()
@@ -17,4 +12,9 @@ export class addClassDto extends getClassDto {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @ApiProperty({ description: 'User email', example: 'userexample@gmail.com' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 }

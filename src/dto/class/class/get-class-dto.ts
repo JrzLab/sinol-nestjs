@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class getTaskDto {
-  @ApiProperty({ description: 'ClassSubject ID', example: 1 })
+export class getClassDto {
+  @ApiProperty({ description: 'Unique identifier for the class', example: 'n1jkbiu2b1' })
   @IsString()
   @IsNotEmpty()
-  id: string;
+  uid: string;
+
 }

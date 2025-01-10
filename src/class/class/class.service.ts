@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { groupClass, Prisma } from '@prisma/client';
 import { ClassPrismaService } from 'src/prisma/classPrisma/class-prisma.service';
 
-type UserClassWithGroupClass = Prisma.userClassGetPayload<{
-  include: {
-    groupClass: {
+type GroupClass = Prisma.groupClassGetPayload<{
+  select: {
+    uid: true;
+    className: true;
+    description: true;
+    owner: {
       select: {
-        uid: true;
-        className: true;
-        description: true;
-        owner: { select: { email: true } };
+        email: true;
       };
     };
   };
@@ -19,23 +19,22 @@ type UserClassWithGroupClass = Prisma.userClassGetPayload<{
 export class ClassService {
   constructor(private readonly classPrismaService: ClassPrismaService) {}
 
-  private formatClassData({ uid, className, description, ownerId }: groupClass) {
-    return { uid: uid.split('-')[0], className, description, ownerId };
+  private formatClassData({ uid, className, description, owner: { email } }: GroupClass) {
+    return { uid: uid.split('-')[0], className, description, owner: email };
   }
 
   async addGClass(uid: string, className: string, description: string, email: string) {
-    const { uid: userClassUid } = await this.classPrismaService.getUClass({ uid });
-    const classData = await this.classPrismaService.addGClass({ className, description }, { email, userClassUid });
-    return this.formatClassData(classData);
+    const classData = await this.classPrismaService.addGClass({ className, description }, { email, userClassUid: uid });
+    return this.formatClassData(classData.groupClass);
   }
 
-  async getUClass(email: string): Promise<UserClassWithGroupClass> {
-    const uClassData = await this.classPrismaService.getUClass({ email });
-    if (!uClassData) {
-      await this.classPrismaService.addUClass({ email });
-      return this.getUClass(email);
-    }
-    return uClassData;
+  async getUClass(uid: string) {
+    return this.classPrismaService.getUClassData({ uid });
+  }
+
+  async joinClass(uidGroupClass: string, uidUserClass: string) {
+    const classData = await this.classPrismaService.joinClass({ uidGroupClass, uidUserClass });
+    return this.formatClassData(classData.groupClass);
   }
 
   async updateClass(uid: string, className: string, description: string) {

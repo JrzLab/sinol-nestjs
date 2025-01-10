@@ -22,6 +22,7 @@ export class SignInService {
       };
     }
 
+    const uClassData = await this.authService.addUidUserClass(email);
     const passwordMatch = await this.authService.compareHashText(password, userData.password);
     if (!passwordMatch) {
       return {
@@ -35,6 +36,7 @@ export class SignInService {
       success: true,
       message: 'Login Successfully',
       data: {
+        uid: uClassData.uid.split('-')[0],
         firstName: userData.firstName,
         lastName: userData.lastName,
         imageUrl: userData.imageUrl,

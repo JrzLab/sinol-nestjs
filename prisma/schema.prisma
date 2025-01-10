@@ -54,11 +54,11 @@ model messageData {
 // This is for the group class
 
 model userClass {
-  uid        String       @id @default(uuid())
-  user       user         @relation(fields: [userId], references: [id])
-  userId     Int          @unique
-  groupClass groupClass[]
-  createdAt  DateTime     @default(now())
+  uid       String      @id @default(uuid())
+  user      user        @relation(fields: [userId], references: [id])
+  userId    Int         @unique
+  createdAt DateTime    @default(now())
+  joinClass joinClass[]
 }
 
 model userTask {
@@ -90,9 +90,17 @@ model groupClass {
   ownerId      Int
   className    String         @db.VarChar(255)
   description  String         @db.VarChar(255)
-  userClass    userClass      @relation(fields: [userClassUid], references: [uid])
-  userClassUid String
   classSubject classSubject[]
+  joinClass    joinClass[]
+}
+
+model joinClass {
+  id            Int        @id @default(autoincrement())
+  userClass     userClass  @relation(fields: [userClassUid], references: [uid])
+  userClassUid  String
+  groupClass    groupClass @relation(fields: [groupClassUid], references: [uid])
+  groupClassUid String
+  createdAt     DateTime   @default(now())
 }
 
 model fileTask {

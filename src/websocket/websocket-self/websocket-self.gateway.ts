@@ -32,8 +32,6 @@ export class WebsocketSelfGateway implements OnGatewayConnection, OnGatewayDisco
       if (s.id === socket.id) {
         console.log(`${chalk.redBright('[Leave]')} Client disconnected with clientId: ${clientId}`);
         this.websocketSelfService.deleteClient(clientId);
-      } else {
-        console.log(`${chalk.redBright('[Leave]')} Client disconnected without clientId`);
       }
     });
   }

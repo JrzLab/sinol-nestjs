@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class updateClassDto {
-  @ApiProperty({ description: 'Class ID', example: 1 })
+  @ApiProperty({ description: 'Class uid', example: 'njad1231asd' })
   @IsString()
   @IsNotEmpty()
   uid: string;

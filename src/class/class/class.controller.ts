@@ -1,37 +1,35 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ClassService } from './class.service';
-import { getClassDto } from 'src/dto/class/get-class-dto';
-import { addClassDto } from 'src/dto/class/add-class-dto';
-import { updateClassDto } from 'src/dto/class/update-class-dto';
+import { getClassDto } from 'src/dto/class/class/get-class-dto';
+import { addClassDto } from 'src/dto/class/class/add-class-dto';
+import { updateClassDto } from 'src/dto/class/class/update-class-dto';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { deleteClassDto } from 'src/dto/class/delete-class-dto';
+import { deleteClassDto } from 'src/dto/class/class/delete-class-dto';
+import { joinClassDto } from 'src/dto/class/class/join-class-dto';
 
 @ApiTags('Class')
 @Controller('class')
 export class ClassController {
   constructor(private readonly classService: ClassService) {}
 
-  @Get('/:email')
-  @ApiOperation({ summary: 'Get class by user email' })
-  @ApiParam({ name: 'email', type: 'string', description: 'User Email' })
+  @Get('/:uid')
+  @ApiOperation({ summary: 'Get class by user uid' })
+  @ApiParam({ name: 'uid', type: 'string', description: 'User Class UID' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Get class successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Get class failed or no data' })
   async getClass(@Param() params: getClassDto) {
-    const uClassData = await this.classService.getUClass(params.email);
+    const uClassData = await this.classService.getUClass(params.uid);
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Class retrieved successfully',
         data: {
-          uid: uClassData.uid.split('-')[0],
-          userId: uClassData.userId,
-          createdAt: uClassData.createdAt,
-          groupClass: uClassData.groupClass.map((groupClass) => ({
-            uid: groupClass.uid.split('-')[0],
-            className: groupClass.className,
-            description: groupClass.description,
-            owner: groupClass.owner.email,
+          groupClass: uClassData.map((data) => ({
+            uid: data.groupClass.uid,
+            className: data.groupClass.className,
+            description: data.groupClass.description,
+            owner: data.groupClass.owner.email,
           })),
         },
       },
@@ -39,7 +37,7 @@ export class ClassController {
     );
   }
 
-  @Post()
+  @Post('create')
   @ApiOperation({ summary: 'Add a new class' })
   @ApiBody({ type: addClassDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class created successfully' })
@@ -57,7 +55,24 @@ export class ClassController {
     );
   }
 
-  @Put()
+  @Post('join')
+  @ApiOperation({ summary: 'Join a class' })
+  @ApiBody({ type: joinClassDto })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Class joined successfully' })
+  async joinClass(@Body() body: joinClassDto) {
+    const { uid, uidUserClass } = body;
+    throw new HttpException(
+      {
+        code: HttpStatus.OK,
+        success: true,
+        message: 'Class joined successfully',
+        data: await this.classService.joinClass(uid, uidUserClass),
+      },
+      HttpStatus.OK,
+    );
+  }
+
+  @Put('update')
   @ApiOperation({ summary: 'Update a class' })
   @ApiBody({ type: updateClassDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class updated successfully' })

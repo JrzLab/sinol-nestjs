@@ -1,9 +1,22 @@
 import * as base32 from 'base32';
 import * as bcrypt from 'bcryptjs';
 import { Injectable } from '@nestjs/common';
+import { userClass } from '@prisma/client';
+import { ClassPrismaService } from 'src/prisma/classPrisma/class-prisma.service';
 
 @Injectable()
 export class AuthService {
+  constructor(private readonly classPrismaService: ClassPrismaService) {}
+
+  async addUidUserClass(email: string): Promise<userClass> {
+    const uClassData = await this.classPrismaService.getUClass({ email });
+    if (!uClassData) {
+      await this.classPrismaService.addUClass({ email });
+      return this.addUidUserClass(email);
+    }
+    return uClassData;
+  }
+
   async hashText(text: string) {
     return bcrypt.hash(text, 15);
   }

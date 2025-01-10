@@ -5,10 +5,14 @@ import { Injectable } from '@nestjs/common';
 import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 import { ISigninGoogle } from 'src/utility/interfaces/interface-auth';
 import { user } from '@prisma/client';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class SigninGoogleService {
-  constructor(private readonly userService: UserPrismaService) {}
+  constructor(
+    private readonly userPrismaService: UserPrismaService,
+    private readonly authService: AuthService,
+  ) {}
 
   private async downloadAndSave(userData: user, url: string) {
     const folderPath = `./files/${userData.id}/tasks`;
@@ -44,13 +48,14 @@ export class SigninGoogleService {
 
     try {
       // Mencari pengguna berdasarkan email
-      const userData = await this.userService.findUserByIdentifier({ email });
+      const userData = await this.userPrismaService.findUserByIdentifier({ email });
+      const uClassData = await this.authService.addUidUserClass(email);
 
       // Jika pengguna tidak ditemukan, buat pengguna baru
       if (!userData) {
-        const user = await this.userService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: '' });
+        const user = await this.userPrismaService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: '' });
         const linkProfile = await this.downloadAndSave(user, imageUrl);
-        await this.userService.addProfilePicture({ email }, { imageUrl: linkProfile });
+        await this.userPrismaService.addProfilePicture({ email }, { imageUrl: linkProfile });
 
         if (!user) {
           return {
@@ -64,6 +69,7 @@ export class SigninGoogleService {
           success: true,
           message: 'User Created Successfully',
           data: {
+            uid: uClassData.uid.split('-')[0],
             firstName: user.firstName,
             lastName: user.lastName,
             imageUrl: linkProfile,
@@ -79,6 +85,7 @@ export class SigninGoogleService {
         success: true,
         message: 'Login Successfully',
         data: {
+          uid: uClassData.uid,
           firstName: userData.firstName,
           lastName: userData.lastName,
           imageUrl: userData.imageUrl,

@@ -6,20 +6,18 @@ import { SignUpDto } from 'src/dto/auth/sign-up-dto';
 @Injectable()
 export class SignUpService {
   constructor(
-    private readonly userService: UserPrismaService,
+    private readonly userPrismaService: UserPrismaService,
     private readonly authService: AuthService,
   ) {}
 
   async createUser(body: SignUpDto) {
     const { email, password, firstName } = body;
 
-    const userExists = await this.userService.findUserByIdentifier({ email, firstName });
+    const userExists = await this.userPrismaService.findUserByIdentifier({ email });
     if (userExists) {
-      const firstNameExists = userExists.firstName.toLowerCase() === firstName.toLowerCase();
       const emailExists = userExists.email.toLowerCase() === email.toLowerCase();
 
       const conflicts: string[] = [];
-      if (firstNameExists) conflicts.push('FirstName');
       if (emailExists) conflicts.push('Email');
 
       return {
@@ -31,11 +29,20 @@ export class SignUpService {
 
     try {
       const hashPassword = await this.authService.hashText(password);
-      const userData = await this.userService.create({ email, password: hashPassword, firstName });
+      const userData = await this.userPrismaService.create({ email, password: hashPassword, firstName });
+      const uClassData = await this.authService.addUidUserClass(email);
       return {
         success: true,
         message: 'User created successfully',
-        data: { firstName: userData.firstName, email: userData.email, joinedAt: userData.createdAt },
+        data: {
+          uid: uClassData.uid.split('-')[0],
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          imageUrl: userData.imageUrl,
+          email: userData.email,
+          joinedAt: userData.createdAt,
+          loginAt: Math.floor(Date.now() / 1000),
+        },
       };
     } catch (error) {
       return {

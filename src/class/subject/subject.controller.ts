@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { SubjectService } from './subject.service';
-import { getSubjectDto } from 'src/dto/class/get-subject-dto';
-import { addSubjectDto } from 'src/dto/class/add-subject-dto';
+import { getSubjectDto } from 'src/dto/class/subject/get-subject-dto';
+import { addSubjectDto } from 'src/dto/class/subject/add-subject-dto';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { updateSubjectDto } from 'src/dto/class/update-subject-dto';
-import { deleteSubjectDto } from 'src/dto/class/delete-subject-dto';
+import { updateSubjectDto } from 'src/dto/class/subject/update-subject-dto';
+import { deleteSubjectDto } from 'src/dto/class/subject/delete-subject-dto';
 
 @ApiTags('Class')
 @Controller('class/subject')
@@ -28,35 +28,37 @@ export class SubjectController {
     );
   }
 
-  @Post()
+  @Post('create')
   @ApiOperation({ summary: 'Add a new subject' })
   @ApiBody({ type: addSubjectDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Subject created successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject creation failed' })
   async addSubject(@Body() body: addSubjectDto) {
+    const { title, description, uid } = body;
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Subject created successfully',
-        data: await this.subjectService.addSubject(body.title, body.description, body.uid),
+        data: await this.subjectService.addSubject(title, description, uid),
       },
       HttpStatus.OK,
     );
   }
 
-  @Put()
+  @Put('edit')
   @ApiOperation({ summary: 'Edit a subject' })
   @ApiBody({ type: updateSubjectDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Subject updated successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject update failed' })
   async editSubject(@Body() body: updateSubjectDto) {
+    const { title, description, id } = body;
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Subject updated successfully',
-        data: await this.subjectService.editSubject(body.title, body.description, Number(body.id)),
+        data: await this.subjectService.editSubject(title, description, Number(id)),
       },
       HttpStatus.OK,
     );
