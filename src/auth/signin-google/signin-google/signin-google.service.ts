@@ -48,49 +48,32 @@ export class SigninGoogleService {
 
     try {
       // Mencari pengguna berdasarkan email
-      const userData = await this.userPrismaService.findUserByIdentifier({ email });
+      let linkProfile = '';
+      const user = await this.userPrismaService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: '' });
       const uClassData = await this.authService.addUidUserClass(email);
-
-      // Jika pengguna tidak ditemukan, buat pengguna baru
-      if (!userData) {
-        const user = await this.userPrismaService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: '' });
-        const linkProfile = await this.downloadAndSave(user, imageUrl);
+      if (imageUrl) {
+        linkProfile = await this.downloadAndSave(user, imageUrl);
         await this.userPrismaService.addProfilePicture({ email }, { imageUrl: linkProfile });
+      }
 
-        if (!user) {
-          return {
-            success: false,
-            message: 'Failed to create user',
-            data: {},
-          };
-        }
-
+      if (!user) {
         return {
-          success: true,
-          message: 'User Created Successfully',
-          data: {
-            uid: uClassData.uid.split('-')[0],
-            firstName: user.firstName,
-            lastName: user.lastName,
-            imageUrl: linkProfile,
-            email: user.email,
-            joinedAt: user.createdAt,
-            loginAt: Math.floor(Date.now() / 1000),
-          },
+          success: false,
+          message: 'Failed to create user',
+          data: {},
         };
       }
 
-      // Jika pengguna ditemukan, lakukan login
       return {
         success: true,
-        message: 'Login Successfully',
+        message: 'Login User Successfully',
         data: {
-          uid: uClassData.uid,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          imageUrl: userData.imageUrl,
-          email: userData.email,
-          joinedAt: userData.createdAt,
+          uid: uClassData.uid.split('-')[0],
+          firstName: user.firstName,
+          lastName: user.lastName,
+          imageUrl: linkProfile,
+          email: user.email,
+          joinedAt: user.createdAt,
           loginAt: Math.floor(Date.now() / 1000),
         },
       };
