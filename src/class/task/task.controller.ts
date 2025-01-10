@@ -1,8 +1,8 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AddTaskDto } from 'src/dto/class/task/add-task-dto';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { getTaskDto } from 'src/dto/class/task/get-task-dto';
 
 @Controller('class/task')
@@ -10,8 +10,9 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Get('/:id')
-  @ApiOperation({ summary: 'Get task by ID' })
+  @ApiOperation({ summary: 'Get task by ID and Email' })
   @ApiParam({ name: 'id', type: 'string', description: 'ClassSubject ID' })
+  @ApiQuery({ name: 'email', type: 'string', description: 'User Email' })
   @ApiResponse({ status: 200, description: 'Task retrieved successfully' })
   async getTask(@Param() data: getTaskDto, @Query() query: { email: string }) {
     const uTaskData = await this.taskService.getTask(query.email, Number(data.id));
@@ -31,6 +32,26 @@ export class TaskController {
     );
   }
 
+  @Get('owner/:id')
+  @ApiOperation({ summary: 'Get task on owner' })
+  @ApiParam({ name: 'id', type: 'string', description: 'ClassSubject ID' })
+  @ApiQuery({ name: 'email', type: 'string', description: 'User Email' })
+  @ApiResponse({ status: 200, description: 'Owner task retrieved successfully' })
+  @ApiResponse({ status: 403, description: 'You are not the owner of this task' })
+  async getTaskOwner(@Param() data: getTaskDto, @Query() query: { email: string }) {
+    const allTaskData = await this.taskService.getTaskOwner(query.email, Number(data.id));
+    const condition = allTaskData.success;
+    throw new HttpException(
+      {
+        code: condition ? HttpStatus.OK : HttpStatus.FORBIDDEN,
+        success: condition,
+        message: allTaskData.message,
+        data: allTaskData.data,
+      },
+      condition ? HttpStatus.OK : HttpStatus.FORBIDDEN,
+    );
+  }
+
   @Post('upload')
   @ApiOperation({ summary: 'Upload task file' })
   @ApiBody({ type: AddTaskDto })
@@ -47,4 +68,7 @@ export class TaskController {
       HttpStatus.CREATED,
     );
   }
+
+  @Put('update')
+  async updateFile() {};
 }

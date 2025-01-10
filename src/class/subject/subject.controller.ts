@@ -34,13 +34,13 @@ export class SubjectController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Subject created successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject creation failed' })
   async addSubject(@Body() body: addSubjectDto) {
-    const { title, description, uid } = body;
+    const { title, description, maxScore, dueDate, uid } = body;
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Subject created successfully',
-        data: await this.subjectService.addSubject(title, description, uid),
+        data: await this.subjectService.addSubject(title, description, maxScore, dueDate, uid),
       },
       HttpStatus.OK,
     );
@@ -52,13 +52,13 @@ export class SubjectController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Subject updated successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject update failed' })
   async editSubject(@Body() body: updateSubjectDto) {
-    const { title, description, id } = body;
+    const { title, description, maxScore, dueDate, id } = body;
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Subject updated successfully',
-        data: await this.subjectService.editSubject(title, description, Number(id)),
+        data: await this.subjectService.editSubject(title, description, maxScore, dueDate, Number(id)),
       },
       HttpStatus.OK,
     );

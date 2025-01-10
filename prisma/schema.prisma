@@ -43,33 +43,34 @@ model roomChat {
 
 model messageData {
   uid         String   @id @default(uuid())
+  content     String   @db.Text()
+  messageTemp DateTime @default(now())
   roomChat    roomChat @relation(fields: [roomChatId], references: [id])
   roomChatId  Int
   sender      user     @relation(fields: [senderId], references: [id])
   senderId    Int
-  content     String   @db.Text()
-  messageTemp DateTime @default(now())
 }
 
 // This is for the group class
 
 model userClass {
   uid       String      @id @default(uuid())
+  createdAt DateTime    @default(now())
   user      user        @relation(fields: [userId], references: [id])
   userId    Int         @unique
-  createdAt DateTime    @default(now())
   joinClass joinClass[]
 }
 
 model userTask {
   id             Int          @id @default(autoincrement())
+  score          Int          @default(0)
+  status         taskStatus   @default(PENDING)
+  createdAt      DateTime     @default(now())
+  editedAt       DateTime     @updatedAt
   user           user         @relation(fields: [userId], references: [id])
   userId         Int
   classSubject   classSubject @relation(fields: [classSubjectId], references: [id])
   classSubjectId Int
-  status         taskStatus
-  createdAt      DateTime     @default(now())
-  editedAt       DateTime     @updatedAt
   fileTask       fileTask[]
 }
 
@@ -79,6 +80,8 @@ model classSubject {
   description   String     @db.Text()
   createdAt     DateTime   @default(now())
   editedAt      DateTime   @updatedAt
+  dueDateAt     DateTime
+  maxScore      Int
   groupClass    groupClass @relation(fields: [groupClassUid], references: [uid])
   groupClassUid String
   userTask      userTask[]
@@ -86,21 +89,21 @@ model classSubject {
 
 model groupClass {
   uid          String         @id @default(uuid())
-  owner        user           @relation(fields: [ownerId], references: [id])
-  ownerId      Int
   className    String         @db.VarChar(255)
   description  String         @db.VarChar(255)
   classSubject classSubject[]
+  owner        user           @relation(fields: [ownerId], references: [id])
+  ownerId      Int
   joinClass    joinClass[]
 }
 
 model joinClass {
   id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @default(now())
   userClass     userClass  @relation(fields: [userClassUid], references: [uid])
   userClassUid  String
   groupClass    groupClass @relation(fields: [groupClassUid], references: [uid])
   groupClassUid String
-  createdAt     DateTime   @default(now())
 }
 
 model fileTask {

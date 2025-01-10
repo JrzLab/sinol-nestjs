@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class addSubjectDto {
   @ApiProperty({ description: 'Title of the subject', example: 'Mathematics' })
@@ -11,6 +11,16 @@ export class addSubjectDto {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @ApiProperty({ description: 'Max score of the subject', example: 100 })
+  @IsNumber()
+  @IsNotEmpty()
+  maxScore: number;
+
+  @ApiProperty({ description: 'Due date of the subject', example: '2022-12-31' })
+  @IsDate()
+  @IsNotEmpty()
+  dueDate: Date;
 
   @ApiProperty({ description: 'Uid of the user class', example: '12312sad123' })
   @IsString()

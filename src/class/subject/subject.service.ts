@@ -6,8 +6,8 @@ import { SubjectPrismaService } from 'src/prisma/subjectPrisma/subject-prisma.se
 export class SubjectService {
   constructor(private readonly subjectPrismaService: SubjectPrismaService) {}
 
-  private formatSubjectData({ id, title, description }: classSubject) {
-    return { id, title, description };
+  private formatSubjectData({ id, title, description, dueDateAt, maxScore }: classSubject) {
+    return { id, title, description, dueDateAt, maxScore };
   }
 
   async getSubjects(uid: string) {
@@ -15,17 +15,19 @@ export class SubjectService {
     return subjectDatas.map(this.formatSubjectData);
   }
 
-  async addSubject(title: string, description: string, uid: string) {
+  async addSubject(title: string, description: string, maxScore: number, dueDate: Date, uid: string) {
     const subjectData = await this.subjectPrismaService.addSubject({
       title,
       description,
+      maxScore,
+      dueDate,
       groupClass: { uid },
     });
     return this.formatSubjectData(subjectData);
   }
 
-  async editSubject(title: string, description: string, id: number) {
-    const subjectData = await this.subjectPrismaService.editSubject({ id }, { title, description });
+  async editSubject(title: string, description: string, maxScore: number, dueDate: Date, id: number) {
+    const subjectData = await this.subjectPrismaService.editSubject({ id }, { title, description, maxScore, dueDate });
     return this.formatSubjectData(subjectData);
   }
 

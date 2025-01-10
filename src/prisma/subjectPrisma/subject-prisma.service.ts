@@ -20,7 +20,7 @@ export class SubjectPrismaService {
     });
   }
 
-  async addSubject(data: { title: string; description: string; groupClass: { uid: string } }) {
+  async addSubject(data: { title: string; description: string; maxScore: number; dueDate: Date; groupClass: { uid: string } }) {
     const classGroupData = await this.prismaService.groupClass.findFirst({
       where: {
         uid: {
@@ -32,6 +32,8 @@ export class SubjectPrismaService {
       data: {
         title: data.title,
         description: data.description,
+        maxScore: data.maxScore,
+        dueDateAt: data.dueDate,
         groupClass: {
           connect: {
             uid: classGroupData.uid,
@@ -41,7 +43,7 @@ export class SubjectPrismaService {
     });
   }
 
-  async editSubject(where: { id: number }, data: { title: string; description: string }) {
+  async editSubject(where: { id: number }, data: { title: string; description: string, maxScore: number, dueDate: Date }) {
     return this.prismaService.classSubject.update({
       where,
       data,

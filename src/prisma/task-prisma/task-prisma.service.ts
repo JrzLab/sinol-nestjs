@@ -32,10 +32,40 @@ export class TaskPrismaService {
     });
   }
 
+  async getTaskAll(where: { email: string; classSubject: number }) {
+    return this.prismaService.userTask.findMany({
+      where: {
+        classSubjectId: where.classSubject,
+      },
+      include: {
+        fileTask: true,
+        classSubject: {
+          select: {
+            groupClass: {
+              select: {
+                owner: {
+                  select: {
+                    email: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            imageUrl: true,
+          },
+        },
+      },
+    });
+  }
+
   async addTask(data: { email: string; groupClassId: number }) {
     return this.prismaService.userTask.create({
       data: {
-        status: 'PENDING',
         user: {
           connect: {
             email: data.email,
