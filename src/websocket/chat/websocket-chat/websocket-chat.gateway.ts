@@ -36,7 +36,7 @@ export class WebsocketChatGateway {
     [identifySender, identifyReciver].forEach((id) => {
       try {
         this.websocketSelfService.getClient(id).emit('updateMessageClient', addMessage);
-      } catch (error) {}
+      } catch {}
     });
   }
 }

@@ -1,12 +1,18 @@
 import { Controller, Post, HttpException, HttpStatus, Body } from '@nestjs/common';
 import { SigninGoogleService } from './signin-google.service';
 import { SigninGoogleDto } from 'src/dto/auth/signin-google-dto';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Authentication')
 @Controller('auth/signin-google')
 export class SigninGoogleController {
   constructor(private readonly signinGoogleService: SigninGoogleService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Sign in with Google' })
+  @ApiBody({ type: SigninGoogleDto })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Sign in with Google successfully' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Sign in with Google failed' })
   async signinGoogle(@Body() body: SigninGoogleDto) {
     const { email, firstName } = body;
 

@@ -1,58 +1,44 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { TaskPrismaService } from 'src/prisma/task-prisma/task-prisma.service';
-
-type UserTaskWithFile = Prisma.userTaskGetPayload<{
-  include: {
-    fileTask: true;
-  };
-}>;
+import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 
 @Injectable()
 export class TaskService {
-  constructor(private readonly taskPrismaService: TaskPrismaService) {}
+  constructor(
+    private readonly taskPrismaService: TaskPrismaService,
+    private readonly userPrismaService: UserPrismaService,
+  ) {}
 
-  async getTask(email: string, classSubject: number): Promise<UserTaskWithFile> {
-    const uTaskData = await this.taskPrismaService.getTask({ email, classSubject });
-    if (!uTaskData) {
-      await this.taskPrismaService.addTask({ email, groupClassId: classSubject });
-      return this.getTask(email, classSubject);
-    }
-    return uTaskData;
+  async getTask(email: string, classSubject: number) {
+    return this.taskPrismaService.getTask({ email, classSubject });
   }
 
   async getTaskOwner(email: string, classSubject: number) {
     const allTaskData = await this.taskPrismaService.getTaskAll({ email, classSubject });
-
-    if (email !== allTaskData[0].classSubject.groupClass.owner.email) {
-      return {
-        success: false,
-        message: 'You are not the owner of this task',
-        data: {},
-      };
-    }
+    const isOwner = email === allTaskData[0].classSubject.groupClass.owner.email;
 
     return {
-      success: true,
-      message: 'Owner task retrieved successfully',
-      data: allTaskData.map((task) => ({
-        id: task.id,
-        username: `${task.user.firstName} ${task.user.lastName}`,
-        imageUrl: task.user.imageUrl,
+      success: isOwner,
+      message: isOwner ? 'Owner task retrieved successfully' : 'You are not the owner of this task',
+      data: isOwner ? allTaskData.map(task => ({
+        username: `${task.user.firstName}${task.user.lastName ? ` ${task.user.lastName}` : ''}`,
         status: task.status,
-        userId: task.userId,
         fileTask: task.fileTask,
-      })),
+      })) : {},
     };
   }
 
-  async addTask(email: string, classSubject: number, file: Express.Multer.File) {
+  async addTask(email: string, classSubject: number, file: Express.Multer.File[]) {
     const uTaskData = await this.taskPrismaService.getTask({ email, classSubject });
-    const fileName = await this.taskPrismaService.createFileFolder({ email, file });
-    return this.taskPrismaService.addFileTask({
-      fileName,
-      userTaskId: uTaskData.id,
-      url: `/file/${uTaskData.id}/${fileName.split('/')[4]}?download=1`,
-    });
+    const filesName = await this.taskPrismaService.createFileFolder({ email, file });
+    const userData = await this.userPrismaService.findUserByIdentifier({ email });
+
+    return Promise.all(filesName.map(fileName => 
+      this.taskPrismaService.addFileTask({
+        fileName,
+        userTaskId: uTaskData.id,
+        url: `/file/${userData.id}/${fileName.split(" ").join("%20")}?download=1`,
+      })
+    ));
   }
 }

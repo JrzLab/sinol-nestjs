@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class deleteClassDto {
-  @ApiProperty({ description: 'Class ID', example: 1 })
+  @ApiProperty({ description: 'Class UID', example: "jiasodn1231" })
   @IsString()
+  @MinLength(8)
   @IsNotEmpty()
   uid: string;
 }

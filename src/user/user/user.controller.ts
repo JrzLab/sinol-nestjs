@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { getUserDto } from 'src/dto/user/get-user-dto';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -28,7 +28,6 @@ export class UserController {
 
   @Get('/:email')
   @ApiOperation({ summary: 'Get user data by params ID' })
-  @ApiParam({ name: 'name', type: 'string', description: 'User Email' })
   @ApiResponse({ status: 200, description: 'User data retrieved successfully' })
   async getUserData(@Param() params: getUserDto) {
     const userData = await this.userService.findUser('', params.email);

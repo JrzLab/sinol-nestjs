@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { classSubject } from '@prisma/client';
 import { SubjectPrismaService } from 'src/prisma/subjectPrisma/subject-prisma.service';
+import { TaskPrismaService } from 'src/prisma/task-prisma/task-prisma.service';
 
 @Injectable()
 export class SubjectService {
-  constructor(private readonly subjectPrismaService: SubjectPrismaService) {}
+  constructor(
+    private readonly subjectPrismaService: SubjectPrismaService,
+    private readonly taskPrismaService: TaskPrismaService,
+  ) {}
 
   private formatSubjectData({ id, title, description, dueDateAt, maxScore }: classSubject) {
     return { id, title, description, dueDateAt, maxScore };
   }
 
   async getSubjects(uid: string) {
-    const subjectDatas = await this.subjectPrismaService.getSubject({ groupClass: { uid } });
-    return subjectDatas.map(this.formatSubjectData);
+    return (await this.subjectPrismaService.getSubject({ groupClass: { uid } })).map(this.formatSubjectData);
   }
 
   async addSubject(title: string, description: string, maxScore: number, dueDate: Date, uid: string) {
@@ -23,16 +26,21 @@ export class SubjectService {
       dueDate,
       groupClass: { uid },
     });
+
+    if (subjectData.groupClass.joinClass.length) {
+      subjectData.groupClass.joinClass.forEach(async (userClass) => {
+        await this.taskPrismaService.addTask({ email: userClass.userClass.user.email, classSubjectId: subjectData.id });
+      });
+    }
+
     return this.formatSubjectData(subjectData);
   }
 
   async editSubject(title: string, description: string, maxScore: number, dueDate: Date, id: number) {
-    const subjectData = await this.subjectPrismaService.editSubject({ id }, { title, description, maxScore, dueDate });
-    return this.formatSubjectData(subjectData);
+    return this.formatSubjectData(await this.subjectPrismaService.editSubject({ id }, { title, description, maxScore, dueDate }));
   }
 
   async deleteSubject(id: number) {
-    const subjectData = await this.subjectPrismaService.deleteSubject({ id });
-    return this.formatSubjectData(subjectData);
+    return this.formatSubjectData(await this.subjectPrismaService.deleteSubject({ id }));
   }
 }

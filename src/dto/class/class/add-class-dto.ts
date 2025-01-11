@@ -17,4 +17,9 @@ export class addClassDto extends getClassDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  @ApiProperty({ description: 'Day of the class', example: '1' })
+  @IsString()
+  @IsNotEmpty()
+  day: string;
 }

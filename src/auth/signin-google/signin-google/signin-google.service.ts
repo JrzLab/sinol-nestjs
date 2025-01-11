@@ -51,7 +51,7 @@ export class SigninGoogleService {
       let linkProfile = '';
       const user = await this.userPrismaService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: '' });
       const uClassData = await this.authService.addUidUserClass(email);
-      if (imageUrl) {
+      if (!imageUrl.includes('/file/')) {
         linkProfile = await this.downloadAndSave(user, imageUrl);
         await this.userPrismaService.addProfilePicture({ email }, { imageUrl: linkProfile });
       }

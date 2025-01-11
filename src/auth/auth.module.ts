@@ -11,7 +11,6 @@ import { jwtConstants } from './jwtConstans';
 import { LogoutModule } from './logout/logout.module';
 import { SigninGoogleModule } from './signin-google/signin-google.module';
 import { VerifyTokenResetPassModule } from './verify-token-reset-pass/verify-token-reset-pass.module';
-import { Prisma } from '@prisma/client';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({

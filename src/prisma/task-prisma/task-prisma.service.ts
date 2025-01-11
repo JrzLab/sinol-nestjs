@@ -10,72 +10,51 @@ export class TaskPrismaService {
     private readonly userPrismaService: UserPrismaService,
   ) {}
 
-  async createFileFolder(data: { email: string; file: Express.Multer.File }) {
-    const userData = await this.userPrismaService.findUserByIdentifier({ email: data.email });
-    const folderPath = `./files/${userData.id}/tasks`;
+  async createFileFolder(data: { email: string; file: Express.Multer.File[] }) {
+    const { id } = await this.userPrismaService.findUserByIdentifier({ email: data.email });
+    const folderPath = `./files/${id}/tasks`;
     if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
     const filesData = fs.readdirSync(folderPath);
-    const fileName = filesData.find((file) => file === `${data.file.originalname}`)
-      ? `${folderPath}/${data.file.originalname.split('.')[0]}-${filesData.length + 1}.${data.file.originalname.split('.')[1]}`
-      : `${folderPath}/${data.file.originalname}`;
-    fs.writeFileSync(fileName, data.file.buffer);
-    return fileName;
+    return data.file.map((filesUpload) => {
+      const fileExitsL = filesData.filter((fileExits) => fileExits.includes(filesUpload.originalname.split('.')[0]));
+      const fileName = fileExitsL.length
+        ? `${filesUpload.originalname.split('.')[0]}-${fileExitsL.length + 1}.${filesUpload.originalname.split('.')[1]}`
+        : filesUpload.originalname;
+      fs.writeFileSync(`${folderPath}/${fileName}`, filesUpload.buffer);
+      return fileName;
+    });
   }
 
-  async getTask(where: { email?: string; classSubject?: number }) {
-    const condition = where.email ? { user: { email: where.email } } : { classSubject: { id: where.classSubject } };
+  async getTask(where: { email: string; classSubject: number }) {
     return this.prismaService.userTask.findFirst({
-      where: condition,
-      include: {
-        fileTask: true,
+      where: {
+        user: { email: where.email },
+        classSubjectId: where.classSubject,
       },
+      include: { fileTask: true },
     });
   }
 
   async getTaskAll(where: { email: string; classSubject: number }) {
     return this.prismaService.userTask.findMany({
-      where: {
-        classSubjectId: where.classSubject,
-      },
+      where: { classSubjectId: where.classSubject },
       include: {
         fileTask: true,
         classSubject: {
           select: {
-            groupClass: {
-              select: {
-                owner: {
-                  select: {
-                    email: true,
-                  },
-                },
-              },
-            },
+            groupClass: { select: { owner: { select: { email: true } } } },
           },
         },
-        user: {
-          select: {
-            firstName: true,
-            lastName: true,
-            imageUrl: true,
-          },
-        },
+        user: { select: { firstName: true, lastName: true } },
       },
     });
   }
 
-  async addTask(data: { email: string; groupClassId: number }) {
+  async addTask(data: { email: string; classSubjectId: number }) {
     return this.prismaService.userTask.create({
       data: {
-        user: {
-          connect: {
-            email: data.email,
-          },
-        },
-        classSubject: {
-          connect: {
-            id: data.groupClassId,
-          },
-        },
+        user: { connect: { email: data.email } },
+        classSubject: { connect: { id: data.classSubjectId } },
       },
     });
   }
@@ -85,11 +64,7 @@ export class TaskPrismaService {
       data: {
         fileName: data.fileName,
         url: data.url,
-        userTask: {
-          connect: {
-            id: data.userTaskId,
-          },
-        },
+        userTask: { connect: { id: data.userTaskId } },
       },
     });
   }

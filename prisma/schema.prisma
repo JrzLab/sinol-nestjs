@@ -75,14 +75,15 @@ model userTask {
 }
 
 model classSubject {
-  id            Int        @id @default(autoincrement())
-  title         String     @db.VarChar(255)
-  description   String     @db.Text()
-  createdAt     DateTime   @default(now())
-  editedAt      DateTime   @updatedAt
+  id            Int         @id @default(autoincrement())
+  title         String      @db.VarChar(255)
+  description   String      @db.Text()
+  createdAt     DateTime    @default(now())
+  editedAt      DateTime    @updatedAt
   dueDateAt     DateTime
   maxScore      Int
-  groupClass    groupClass @relation(fields: [groupClassUid], references: [uid])
+  status        statusClass @default(OPEN)
+  groupClass    groupClass  @relation(fields: [groupClassUid], references: [uid])
   groupClassUid String
   userTask      userTask[]
 }
@@ -91,9 +92,11 @@ model groupClass {
   uid          String         @id @default(uuid())
   className    String         @db.VarChar(255)
   description  String         @db.VarChar(255)
-  classSubject classSubject[]
+  day          Int            @db.Int
+  createdAt    DateTime       @default(now())
   owner        user           @relation(fields: [ownerId], references: [id])
   ownerId      Int
+  classSubject classSubject[]
   joinClass    joinClass[]
 }
 
@@ -119,4 +122,9 @@ enum taskStatus {
   LATE
   PENDING
   COMPLATE
+}
+
+enum statusClass {
+  OPEN
+  CLOSED
 }

@@ -1,10 +1,11 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { AddTaskDto } from 'src/dto/class/task/add-task-dto';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { getTaskDto } from 'src/dto/class/task/get-task-dto';
 
+@ApiTags('Task')
 @Controller('class/task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
@@ -22,9 +23,7 @@ export class TaskController {
         success: true,
         message: 'Task retrieved successfully',
         data: {
-          id: uTaskData.id,
           status: uTaskData.status,
-          userId: uTaskData.userId,
           fileTask: uTaskData.fileTask,
         },
       },
@@ -56,8 +55,8 @@ export class TaskController {
   @ApiOperation({ summary: 'Upload task file' })
   @ApiBody({ type: AddTaskDto })
   @ApiResponse({ status: 201, description: 'File uploaded successfully' })
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@Body() body: AddTaskDto, @UploadedFile() file: Express.Multer.File) {
+  @UseInterceptors(FilesInterceptor('file'))
+  async uploadFile(@Body() body: AddTaskDto, @UploadedFiles() file: Express.Multer.File[]) {
     throw new HttpException(
       {
         code: HttpStatus.OK,
@@ -70,5 +69,5 @@ export class TaskController {
   }
 
   @Put('update')
-  async updateFile() {};
+  async updateFile() {}
 }

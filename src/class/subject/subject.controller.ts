@@ -6,14 +6,14 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/s
 import { updateSubjectDto } from 'src/dto/class/subject/update-subject-dto';
 import { deleteSubjectDto } from 'src/dto/class/subject/delete-subject-dto';
 
-@ApiTags('Class')
+@ApiTags('Subject')
 @Controller('class/subject')
 export class SubjectController {
   constructor(private readonly subjectService: SubjectService) {}
 
   @Get('/:uid')
   @ApiOperation({ summary: 'Get subjects by class uid' })
-  @ApiParam({ name: 'uid', type: 'string', description: 'User Class UID' })
+  @ApiParam({ name: 'uid', type: 'string', description: 'Class UID' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Get subject successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Get subject failed or no data' })
   async getSubjects(@Param() params: getSubjectDto) {

@@ -26,10 +26,15 @@ export class ClassController {
         message: 'Class retrieved successfully',
         data: {
           groupClass: uClassData.map((data) => ({
-            uid: data.groupClass.uid,
+            uid: data.groupClass.uid.split('-')[0],
+            day: data.groupClass.day,
             className: data.groupClass.className,
             description: data.groupClass.description,
-            owner: data.groupClass.owner.email,
+            ownerData: {
+              email: data.groupClass.owner.email,
+              name: `${data.groupClass.owner.firstName}${data.groupClass.owner.lastName ? ` ${data.groupClass.owner.lastName}` : ''}`,
+              imageUrl: data.groupClass.owner.imageUrl,
+            },
           })),
         },
       },
@@ -43,13 +48,13 @@ export class ClassController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class created successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class creation failed' })
   async addClass(@Body() body: addClassDto) {
-    const { uid, className, description, email } = body;
+    const { uid, className, description, email, day } = body;
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Class created successfully',
-        data: await this.classService.addGClass(uid, className, description, email),
+        data: await this.classService.addGClass(uid, className, description, email, Number(day)),
       },
       HttpStatus.OK,
     );
@@ -60,13 +65,13 @@ export class ClassController {
   @ApiBody({ type: joinClassDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class joined successfully' })
   async joinClass(@Body() body: joinClassDto) {
-    const { uid, uidUserClass } = body;
+    const { uidClass, uidClassUser } = body;
     throw new HttpException(
       {
         code: HttpStatus.OK,
         success: true,
         message: 'Class joined successfully',
-        data: await this.classService.joinClass(uid, uidUserClass),
+        data: await this.classService.joinClass(uidClass, uidClassUser),
       },
       HttpStatus.OK,
     );
@@ -78,15 +83,16 @@ export class ClassController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class updated successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class update failed' })
   async updateClass(@Body() body: updateClassDto) {
-    const { uid, className, description } = body;
+    const { uid, className, description, email, day } = body;
+    const updateClass = await this.classService.updateClass(uid, className, description, email, Number(day));
     throw new HttpException(
       {
-        code: HttpStatus.OK,
-        success: true,
-        message: 'Class updated successfully',
-        data: await this.classService.updateClass(uid, className, description),
+        code: updateClass.success ? HttpStatus.OK : HttpStatus.CONFLICT,
+        success: updateClass.success,
+        message: updateClass.message,
+        data: updateClass.data,
       },
-      HttpStatus.OK,
+      updateClass.success ? HttpStatus.OK : HttpStatus.CONFLICT,
     );
   }
 
