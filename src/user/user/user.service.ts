@@ -40,7 +40,7 @@ export class UserService {
   }
 
   async updateUser(email: string, firstName: string, lastName: string, emailChange: string) {
-    const profileData = await this.userPrismaService.updateProfile({ email }, { firstName, lastName, email: emailChange });
+    const profileData = await this.userPrismaService.updateProfile({ email }, { firstName, lastName, emailChange });
     return this.formatResponse(profileData);
   }
 }

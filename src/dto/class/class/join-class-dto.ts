@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class joinClassDto {
+export class JoinClassDto {
   @ApiProperty({ description: 'uid class', example: 'njad1231asd' })
   @IsString()
   @MinLength(8)

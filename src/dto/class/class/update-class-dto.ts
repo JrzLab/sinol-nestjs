@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-export class updateClassDto {
+export class UpdateClassDto {
   @ApiProperty({ description: 'Class uid', example: 'njad1231asd' })
   @IsString()
   @MinLength(8)

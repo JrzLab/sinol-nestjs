@@ -59,10 +59,14 @@ export class UserPrismaService {
     });
   }
 
-  async updateProfile(where: { email: string }, data: { firstName: string; lastName: string; email: string }) {
+  async updateProfile(where: { email: string }, data: { firstName: string; lastName: string; emailChange: string }) {
     return this.prismaService.user.update({
       where,
-      data,
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.emailChange,
+      },
     });
   }
 }

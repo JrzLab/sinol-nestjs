@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty, IsNumber, IsString, MinLength } from 'class-validator';
 
-export class addSubjectDto {
+export class AddSubjectDto {
   @ApiProperty({ description: 'Title of the subject', example: 'Mathematics' })
   @IsString()
   @IsNotEmpty()

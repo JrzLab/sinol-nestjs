@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import { ClassService } from './class.service';
-import { getClassDto } from 'src/dto/class/class/get-class-dto';
-import { addClassDto } from 'src/dto/class/class/add-class-dto';
-import { updateClassDto } from 'src/dto/class/class/update-class-dto';
+import { GetClassDto } from 'src/dto/class/class/get-class-dto';
+import { AddClassDto } from 'src/dto/class/class/add-class-dto';
+import { UpdateClassDto } from 'src/dto/class/class/update-class-dto';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { deleteClassDto } from 'src/dto/class/class/delete-class-dto';
-import { joinClassDto } from 'src/dto/class/class/join-class-dto';
+import { DeleteClassDto } from 'src/dto/class/class/delete-class-dto';
+import { JoinClassDto } from 'src/dto/class/class/join-class-dto';
 
 @ApiTags('Class')
 @Controller('class')
@@ -17,7 +17,7 @@ export class ClassController {
   @ApiParam({ name: 'uid', type: 'string', description: 'User Class UID' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Get class successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Get class failed or no data' })
-  async getClass(@Param() params: getClassDto) {
+  async getClass(@Param() params: GetClassDto) {
     const uClassData = await this.classService.getUClass(params.uid);
     throw new HttpException(
       {
@@ -44,10 +44,10 @@ export class ClassController {
 
   @Post('create')
   @ApiOperation({ summary: 'Add a new class' })
-  @ApiBody({ type: addClassDto })
+  @ApiBody({ type: AddClassDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class created successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class creation failed' })
-  async addClass(@Body() body: addClassDto) {
+  async addClass(@Body() body: AddClassDto) {
     const { uid, className, description, email, day } = body;
     throw new HttpException(
       {
@@ -62,9 +62,9 @@ export class ClassController {
 
   @Post('join')
   @ApiOperation({ summary: 'Join a class' })
-  @ApiBody({ type: joinClassDto })
+  @ApiBody({ type: JoinClassDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class joined successfully' })
-  async joinClass(@Body() body: joinClassDto) {
+  async joinClass(@Body() body: JoinClassDto) {
     const { uidClass, uidClassUser } = body;
     throw new HttpException(
       {
@@ -79,10 +79,10 @@ export class ClassController {
 
   @Put('update')
   @ApiOperation({ summary: 'Update a class' })
-  @ApiBody({ type: updateClassDto })
+  @ApiBody({ type: UpdateClassDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class updated successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class update failed' })
-  async updateClass(@Body() body: updateClassDto) {
+  async updateClass(@Body() body: UpdateClassDto) {
     const { uid, className, description, email, day } = body;
     const updateClass = await this.classService.updateClass(uid, className, description, email, Number(day));
     throw new HttpException(
@@ -101,7 +101,7 @@ export class ClassController {
   @ApiParam({ name: 'uid', type: 'string', description: 'Class UID' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class deleted successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class deletion failed' })
-  async deleteClass(@Param() params: deleteClassDto) {
+  async deleteClass(@Param() params: DeleteClassDto) {
     throw new HttpException(
       {
         code: HttpStatus.OK,

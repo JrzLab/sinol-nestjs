@@ -1,8 +1,8 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { getClassDto } from './get-class-dto';
+import { GetClassDto } from './get-class-dto';
 
-export class addClassDto extends getClassDto {
+export class AddClassDto extends GetClassDto {
   @ApiProperty({ description: 'Name of the class', example: 'Mathematics' })
   @IsString()
   @IsNotEmpty()

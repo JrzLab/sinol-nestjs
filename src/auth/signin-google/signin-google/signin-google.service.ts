@@ -16,16 +16,15 @@ export class SigninGoogleService {
 
   private async downloadAndSave(userData: user, url: string) {
     const folderPath = `./files/${userData.id}/tasks`;
-    if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
     const filePath = `./files/${userData.id}/profile.webp`;
+    if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
 
     https.get(url, (response) => {
       if (response.statusCode === 200) {
         const chunks: Uint8Array[] = [];
         response.on('data', (chunk) => chunks.push(chunk));
         response.on('end', async () => {
-          const buffer = Buffer.concat(chunks);
-          const bufferImage = await sharp(buffer).webp({ quality: 100 }).toBuffer();
+          const bufferImage = await sharp(Buffer.concat(chunks)).webp({ quality: 100 }).toBuffer();
           fs.writeFileSync(filePath, bufferImage);
         });
       }
@@ -36,32 +35,20 @@ export class SigninGoogleService {
 
   async fetchOrCreateUsers(data: ISigninGoogle) {
     const { email, firstName, lastName, imageUrl } = data;
-
-    // Validasi input
     if (!email || !firstName) {
-      return {
-        success: false,
-        message: 'Email and First Name are required',
-        data: {},
-      };
+      return { success: false, message: 'Email and First Name are required', data: {} };
     }
 
     try {
-      // Mencari pengguna berdasarkan email
-      let linkProfile = '';
-      const user = await this.userPrismaService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: '' });
+      let user = await this.userPrismaService.fetchUserOrCreateUser({ email, firstName, lastName, imageUrl: '' });
       const uClassData = await this.authService.addUidUserClass(email);
-      if (!imageUrl.includes('/file/')) {
-        linkProfile = await this.downloadAndSave(user, imageUrl);
-        await this.userPrismaService.addProfilePicture({ email }, { imageUrl: linkProfile });
+      if (!imageUrl.includes('/file/') && user.imageUrl === '') {
+        const linkProfile = await this.downloadAndSave(user, imageUrl);
+        user = await this.userPrismaService.addProfilePicture({ email }, { imageUrl: linkProfile });
       }
 
       if (!user) {
-        return {
-          success: false,
-          message: 'Failed to create user',
-          data: {},
-        };
+        return { success: false, message: 'Failed to create user', data: {} };
       }
 
       return {
@@ -71,18 +58,14 @@ export class SigninGoogleService {
           uid: uClassData.uid.split('-')[0],
           firstName: user.firstName,
           lastName: user.lastName,
-          imageUrl: linkProfile,
+          imageUrl: user.imageUrl,
           email: user.email,
           joinedAt: user.createdAt,
           loginAt: Math.floor(Date.now() / 1000),
         },
       };
     } catch (error) {
-      return {
-        success: false,
-        message: `An error occurred: ${error.message}`,
-        data: {},
-      };
+      return { success: false, message: `An error occurred: ${error.message}`, data: {} };
     }
   }
 }

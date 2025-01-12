@@ -75,12 +75,15 @@ export class ClassPrismaService {
   }
 
   async joinClass(data: { uidGroupClass: string; uidUserClass: string }) {
-    const userClassData = await this.searchUserClass({ uid: data.uidUserClass });
-    const groupClassData = await this.searchGroupClass({ uid: data.uidGroupClass });
-    const joinClassData = await this.prismaService.joinClass.create({
-      data: {
-        userClass: { connect: { uid: userClassData.uid } },
-        groupClass: { connect: { uid: groupClassData.uid } },
+    const [userClassData, groupClassData] = await Promise.all([
+      this.searchUserClass({ uid: data.uidUserClass }),
+      this.searchGroupClass({ uid: data.uidGroupClass }),
+    ]);
+
+    let joinClassData = await this.prismaService.joinClass.findFirst({
+      where: {
+        userClassUid: userClassData.uid,
+        groupClassUid: groupClassData.uid,
       },
       select: {
         groupClass: {
@@ -95,6 +98,28 @@ export class ClassPrismaService {
         },
       },
     });
+
+    if (!joinClassData) {
+      joinClassData = await this.prismaService.joinClass.create({
+        data: {
+          userClass: { connect: { uid: userClassData.uid } },
+          groupClass: { connect: { uid: groupClassData.uid } },
+        },
+        select: {
+          groupClass: {
+            select: {
+              uid: true,
+              className: true,
+              description: true,
+              day: true,
+              classSubject: { select: { id: true } },
+              owner: { select: { email: true, firstName: true, lastName: true, imageUrl: true } },
+            },
+          },
+        },
+      });
+    }
+
     return { userEmail: userClassData.user.email, ...joinClassData };
   }
 
