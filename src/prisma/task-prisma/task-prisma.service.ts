@@ -25,6 +25,17 @@ export class TaskPrismaService {
     });
   }
 
+  async deleteFileAndTask(data: { email: string; file: { id: number; fileName: string; url: string; userTaskId: number }[] }) {
+    const { id } = await this.userPrismaService.findUserByIdentifier({ email: data.email });
+    const folderPath = `./files/${id}/tasks`;
+    return Promise.all(
+      data.file.map((file) => {
+        fs.unlinkSync(`${folderPath}/${file.fileName}`);
+        return this.prismaService.fileTask.delete({ where: { id: file.id } });
+      }),
+    );
+  }
+
   async getTask(where: { email: string; classSubject: number }) {
     return this.prismaService.userTask.findFirst({
       where: {
