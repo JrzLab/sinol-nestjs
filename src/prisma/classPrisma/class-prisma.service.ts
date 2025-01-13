@@ -141,6 +141,10 @@ export class ClassPrismaService {
   async deleteClass(where: { uid: string }) {
     const groupClassData = await this.searchGroupClass({ uid: where.uid });
 
+    await this.prismaService.fileTask.deleteMany({
+      where: { userTask: { classSubject: { groupClass: { uid: groupClassData.uid } } } },
+    });
+
     await this.prismaService.userTask.deleteMany({
       where: { classSubject: { groupClass: { uid: groupClassData.uid } } },
     });

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { classSubject } from '@prisma/client';
 import { SubjectPrismaService } from 'src/prisma/subjectPrisma/subject-prisma.service';
 import { TaskPrismaService } from 'src/prisma/task-prisma/task-prisma.service';
@@ -42,5 +43,13 @@ export class SubjectService {
 
   async deleteSubject(id: number) {
     return this.formatSubjectData(await this.subjectPrismaService.deleteSubject({ id }));
+  }
+
+  @Cron('0 0 * * *')
+  async handleCron() {
+    const subjectDatas = await this.subjectPrismaService.getAllSubject();
+    for (const subjectData of subjectDatas) {
+      await this.subjectPrismaService.updateStatusSubject({ id: subjectData.id }, { status: 'CLOSED' });
+    }
   }
 }

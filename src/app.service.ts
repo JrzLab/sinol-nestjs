@@ -1,9 +1,10 @@
 import * as chalk from 'chalk';
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AppService.name);
   constructor(private readonly configService: ConfigService) {}
 
   onApplicationBootstrap() {
@@ -12,9 +13,9 @@ export class AppService implements OnApplicationBootstrap {
       port_ws: this.configService.get<number>('PORT_WS'),
     };
 
-    console.log(`${chalk.green('[Successfuly]')} You Can Access Documentation on: http://localhost:${dataPort.port}/docs`);
-    console.log(`${chalk.green('[Successfuly]')} Application is running on: http://localhost:${dataPort.port}`);
-    console.log(`${chalk.green('[Successfuly]')} Websocket is running on: http://localhost:${dataPort.port_ws}`);
+    this.logger.log(`You Can Access Documentation on: ${chalk.white(`http://localhost:${dataPort.port}/docs`)}`);
+    this.logger.log(`Application is running on: ${chalk.white(`http://localhost:${dataPort.port}`)}`);
+    this.logger.log(` Websocket is running on: ${chalk.white(`http://localhost:${dataPort.port_ws}`)}`);
   }
 
   getHello() {

@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { statusSubject } from '@prisma/client';
 
 @Injectable()
 export class SubjectPrismaService {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async getAllSubject() {
+    return this.prismaService.classSubject.findMany({
+      where: { dueDateAt: { lte: new Date() } },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 
   async getSubject(where: { groupClass: { uid: string } }) {
     return this.prismaService.classSubject.findMany({
@@ -54,7 +62,15 @@ export class SubjectPrismaService {
     });
   }
 
+  async updateStatusSubject(where: { id: number }, data: { status: statusSubject }) {
+    return this.prismaService.classSubject.update({
+      where,
+      data,
+    });
+  }
+
   async deleteSubject(where: { id: number }) {
+    await this.prismaService.fileTask.deleteMany({ where: { userTask: { classSubjectId: where.id } } });
     await this.prismaService.userTask.deleteMany({ where: { classSubjectId: where.id } });
     return this.prismaService.classSubject.delete({ where });
   }

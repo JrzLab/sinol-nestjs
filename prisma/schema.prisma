@@ -82,7 +82,7 @@ model classSubject {
   editedAt      DateTime    @updatedAt
   dueDateAt     DateTime
   maxScore      Int
-  status        statusClass @default(OPEN)
+  status        statusSubject @default(OPEN)
   groupClass    groupClass  @relation(fields: [groupClassUid], references: [uid])
   groupClassUid String
   userTask      userTask[]
@@ -124,7 +124,7 @@ enum taskStatus {
   COMPLATE
 }
 
-enum statusClass {
+enum statusSubject {
   OPEN
   CLOSED
 }
