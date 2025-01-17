@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetMessageDto } from 'src/dto/websocket/get-message-dto';
 import { WebsocketPrismaService } from 'src/prisma/websocketPrisma/websocket-prisma.service';
