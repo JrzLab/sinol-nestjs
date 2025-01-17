@@ -23,6 +23,7 @@ export class WebsocketChatGateway {
    *
    * @param data - Data pesan yang dikirim
    */
+
   @SubscribeMessage('sendMessage')
   async handleMessage(@MessageBody() data: CreateMessageDto) {
     const { identifySender, identifyReciver, message, idRoom } = data;

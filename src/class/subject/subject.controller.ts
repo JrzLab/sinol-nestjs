@@ -15,7 +15,6 @@ export class SubjectController {
   @ApiOperation({ summary: 'Get subjects by class uid' })
   @ApiParam({ name: 'uid', type: 'string', description: 'Class UID' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Get subject successfully' })
-  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Get subject failed or no data' })
   async getSubjects(@Param() params: GetSubjectDto) {
     throw new HttpException(
       {
@@ -35,14 +34,16 @@ export class SubjectController {
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject creation failed' })
   async addSubject(@Body() body: AddSubjectDto) {
     const { title, description, maxScore, dueDate, uid } = body;
+    const createData = await this.subjectService.addSubject(title, description, maxScore, dueDate, uid);
+    const length = Object.keys(createData).length > 0;
     throw new HttpException(
       {
-        code: HttpStatus.OK,
-        success: true,
-        message: 'Subject created successfully',
-        data: await this.subjectService.addSubject(title, description, maxScore, dueDate, uid),
+        code: length ? HttpStatus.CREATED : HttpStatus.CONFLICT,
+        success: length,
+        message: length ? 'Subject created successfully' : 'Subject creation failed',
+        data: createData,
       },
-      HttpStatus.OK,
+      length ? HttpStatus.CREATED : HttpStatus.CONFLICT,
     );
   }
 
@@ -53,14 +54,16 @@ export class SubjectController {
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject update failed' })
   async editSubject(@Body() body: UpdateSubjectDto) {
     const { title, description, maxScore, dueDate, id } = body;
+    const updateData = await this.subjectService.editSubject(title, description, maxScore, dueDate, id);
+    const length = Object.keys(updateData).length > 0;
     throw new HttpException(
       {
-        code: HttpStatus.OK,
-        success: true,
-        message: 'Subject updated successfully',
-        data: await this.subjectService.editSubject(title, description, maxScore, dueDate, Number(id)),
+        code: length ? HttpStatus.CREATED : HttpStatus.CONFLICT,
+        success: length,
+        message: length ? 'Subject updated successfully' : 'Subject update failed',
+        data: updateData,
       },
-      HttpStatus.OK,
+      length ? HttpStatus.CREATED : HttpStatus.CONFLICT,
     );
   }
 
@@ -70,14 +73,16 @@ export class SubjectController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Subject deleted successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Subject deletion failed' })
   async deleteSubject(@Param() params: DeleteSubjectDto) {
+    const deleteData = await this.subjectService.deleteSubject(Number(params.id));
+    const length = Object.keys(deleteData).length > 0;
     throw new HttpException(
       {
-        code: HttpStatus.OK,
-        success: true,
-        message: 'Subject deleted successfully',
-        data: await this.subjectService.deleteSubject(Number(params.id)),
+        code: length ? HttpStatus.CREATED : HttpStatus.CONFLICT,
+        success: length,
+        message: length ? 'Subject deleted successfully' : 'Subject deletion failed',
+        data: deleteData,
       },
-      HttpStatus.OK,
+      length ? HttpStatus.CREATED : HttpStatus.CONFLICT,
     );
   }
 }

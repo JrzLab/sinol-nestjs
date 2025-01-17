@@ -1,7 +1,9 @@
+import * as fs from 'fs';
 import { Injectable } from '@nestjs/common';
 import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 import { AuthService } from 'src/auth/auth.service';
 import { SignUpDto } from 'src/dto/auth/sign-up-dto';
+import { user } from '@prisma/client';
 
 @Injectable()
 export class SignUpService {
@@ -9,6 +11,11 @@ export class SignUpService {
     private readonly userPrismaService: UserPrismaService,
     private readonly authService: AuthService,
   ) {}
+
+  private createFolderUser = (userData: user) => {
+    const folderPath = `./files/${userData.id}/tasks`;
+    if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
+  };
 
   async createUser(body: SignUpDto) {
     const { email, password, firstName } = body;
@@ -30,6 +37,7 @@ export class SignUpService {
     try {
       const hashPassword = await this.authService.hashText(password);
       const userData = await this.userPrismaService.create({ email, password: hashPassword, firstName });
+      this.createFolderUser(userData);
       const uClassData = await this.authService.addUidUserClass(email);
       return {
         success: true,

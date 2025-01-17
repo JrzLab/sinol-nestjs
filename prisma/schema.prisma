@@ -31,14 +31,16 @@ model user {
 }
 
 model roomChat {
-  id        Int           @id @default(autoincrement())
-  createdAt DateTime      @default(now())
-  expiredAt DateTime?
-  userA     user          @relation("userA", fields: [userAId], references: [id])
-  userB     user          @relation("userB", fields: [userBId], references: [id])
-  userAId   Int
-  userBId   Int
-  messages  messageData[]
+  id            Int           @id @default(autoincrement())
+  createdAt     DateTime      @default(now())
+  expiredAt     DateTime?
+  userA         user          @relation("userA", fields: [userAId], references: [id])
+  userB         user          @relation("userB", fields: [userBId], references: [id])
+  userAId       Int
+  userBId       Int
+  groupClass    groupClass    @relation(fields: [groupClassUid], references: [uid])
+  groupClassUid String
+  messages      messageData[]
 }
 
 model messageData {
@@ -75,15 +77,15 @@ model userTask {
 }
 
 model classSubject {
-  id            Int         @id @default(autoincrement())
-  title         String      @db.VarChar(255)
-  description   String      @db.Text()
-  createdAt     DateTime    @default(now())
-  editedAt      DateTime    @updatedAt
+  id            Int           @id @default(autoincrement())
+  title         String        @db.VarChar(255)
+  description   String        @db.Text()
+  createdAt     DateTime      @default(now())
+  editedAt      DateTime      @updatedAt
   dueDateAt     DateTime
   maxScore      Int
   status        statusSubject @default(OPEN)
-  groupClass    groupClass  @relation(fields: [groupClassUid], references: [uid])
+  groupClass    groupClass    @relation(fields: [groupClassUid], references: [uid])
   groupClassUid String
   userTask      userTask[]
 }
@@ -96,6 +98,7 @@ model groupClass {
   createdAt    DateTime       @default(now())
   owner        user           @relation(fields: [ownerId], references: [id])
   ownerId      Int
+  roomChat     roomChat[]
   classSubject classSubject[]
   joinClass    joinClass[]
 }

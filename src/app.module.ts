@@ -13,7 +13,7 @@ import { UserModule } from './user/user.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: `.env`,
     }),
     ScheduleModule.forRoot(),
     AuthModule,

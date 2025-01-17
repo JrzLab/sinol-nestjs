@@ -10,11 +10,22 @@ export class TaskService {
   ) {}
 
   async getTask(email: string, classSubject: number) {
-    return this.taskPrismaService.getTask({ email, classSubject });
+    const getTaskData = await this.taskPrismaService.getTask({ email, classSubjectId: classSubject });
+
+    if (!getTaskData) return {};
+
+    return {
+      id: getTaskData.id,
+      status: getTaskData.status,
+      fileTask: getTaskData.fileTask,
+    };
   }
 
-  async getTaskOwner(email: string, classSubject: number) {
-    const allTaskData = await this.taskPrismaService.getTaskAll({ email, classSubject });
+  async getTaskOwner(email: string, classSubjectId: number) {
+    const allTaskData = await this.taskPrismaService.getTaskAll({ email, classSubjectId });
+
+    if (!allTaskData.length) return { success: false, message: 'Task not found', data: {} };
+
     const isOwner = email === allTaskData[0].classSubject.groupClass.owner.email;
 
     return {
@@ -30,8 +41,11 @@ export class TaskService {
     };
   }
 
-  async addTask(email: string, classSubject: number, file: Express.Multer.File[]) {
-    const uTaskData = await this.taskPrismaService.getTask({ email, classSubject });
+  async addTask(email: string, classSubjectId: number, file: Express.Multer.File[]) {
+    const uTaskData = await this.taskPrismaService.getTask({ email, classSubjectId });
+
+    if (!uTaskData) return {};
+
     const filesName = await this.taskPrismaService.createFileFolder({ email, file });
     const userData = await this.userPrismaService.findUserByIdentifier({ email });
 
@@ -48,6 +62,9 @@ export class TaskService {
 
   async updateTask(email: string, classSubject: number, file: Express.Multer.File[]) {
     const uTaskData = await this.getTask(email, classSubject);
+
+    if (!Object.keys(uTaskData).length) return {};
+
     const userData = await this.userPrismaService.findUserByIdentifier({ email });
     const oldFileNames = uTaskData.fileTask.map((fileTask) => fileTask.fileName);
     const newFileNames = file.map((fileTask) => fileTask.originalname);

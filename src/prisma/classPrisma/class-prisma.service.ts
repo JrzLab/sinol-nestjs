@@ -38,6 +38,8 @@ export class ClassPrismaService {
 
     const userClassData = await this.searchUserClass({ uid: user.userClassUid });
 
+    if (!userClassData) return null;
+
     return this.prismaService.joinClass.create({
       data: {
         userClass: { connect: { uid: userClassData.uid } },
@@ -74,11 +76,39 @@ export class ClassPrismaService {
     });
   }
 
+  async getClassUsers(where: { groupClassUid: string }) {
+    return this.prismaService.groupClass.findFirst({
+      where: { uid: { contains: where.groupClassUid } },
+      select: {
+        joinClass: {
+          select: {
+            userClass: {
+              select: {
+                uid: true,
+                user: {
+                  select: {
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                    imageUrl: true,
+                  },
+                },
+              },
+            },
+            createdAt: true,
+          },
+        },
+      },
+    });
+  }
+
   async joinClass(data: { uidGroupClass: string; uidUserClass: string }) {
     const [userClassData, groupClassData] = await Promise.all([
       this.searchUserClass({ uid: data.uidUserClass }),
       this.searchGroupClass({ uid: data.uidGroupClass }),
     ]);
+
+    if (!userClassData || !groupClassData) return null;
 
     let joinClassData = await this.prismaService.joinClass.findFirst({
       where: {
@@ -96,6 +126,7 @@ export class ClassPrismaService {
             owner: { select: { email: true, firstName: true, lastName: true, imageUrl: true } },
           },
         },
+        userClass: { select: { user: { select: { email: true } } } },
       },
     });
 
@@ -116,6 +147,7 @@ export class ClassPrismaService {
               owner: { select: { email: true, firstName: true, lastName: true, imageUrl: true } },
             },
           },
+          userClass: { select: { user: { select: { email: true } } } },
         },
       });
     }
@@ -123,8 +155,53 @@ export class ClassPrismaService {
     return { userEmail: userClassData.user.email, ...joinClassData };
   }
 
+  async leaveClass(data: { uidGroupClass: string; uidUserClass: string }) {
+    const [userClassData, groupClassData] = await Promise.all([
+      this.searchUserClass({ uid: data.uidUserClass }),
+      this.searchGroupClass({ uid: data.uidGroupClass }),
+    ]);
+
+    if (!userClassData || !groupClassData) return null;
+
+    const leaveClass = await this.prismaService.joinClass.findFirst({
+      where: {
+        userClassUid: userClassData.uid,
+        groupClassUid: groupClassData.uid,
+      },
+      select: {
+        groupClass: {
+          select: {
+            uid: true,
+            className: true,
+            description: true,
+            day: true,
+            classSubject: { select: { id: true } },
+            owner: { select: { email: true, firstName: true, lastName: true, imageUrl: true } },
+          },
+        },
+        userClass: { select: { user: { select: { email: true } } } },
+      },
+    });
+
+    await this.prismaService.joinClass.deleteMany({
+      where: {
+        userClassUid: userClassData.uid,
+        groupClassUid: groupClassData.uid,
+      },
+    });
+
+    if (userClassData.user.email === groupClassData.owner.email) {
+      await this.deleteClass({ uid: groupClassData.uid });
+    }
+
+    return { userEmail: userClassData.user.email, ...leaveClass };
+  }
+
   async updateClass(where: { uid: string }, data: { className: string; description: string; email: string; day: number }) {
     const groupClassData = await this.searchGroupClass({ uid: where.uid });
+
+    if (!groupClassData) return null;
+
     return groupClassData.owner.email === data.email
       ? this.prismaService.groupClass.update({
           where: { uid: groupClassData.uid },
@@ -135,11 +212,23 @@ export class ClassPrismaService {
           },
           include: { owner: { select: { email: true, firstName: true, lastName: true, imageUrl: true } } },
         })
-      : null;
+      : "You don't have permission to update this class";
   }
 
   async deleteClass(where: { uid: string }) {
     const groupClassData = await this.searchGroupClass({ uid: where.uid });
+
+    if (!groupClassData) return null;
+
+    const roomChat = await this.prismaService.roomChat.findFirst({
+      where: { groupClassUid: groupClassData.uid },
+      select: { id: true },
+    });
+
+    if (roomChat?.id) {
+      await this.prismaService.messageData.deleteMany({ where: { roomChatId: roomChat.id } });
+      await this.prismaService.roomChat.delete({ where: { id: roomChat.id } });
+    }
 
     await this.prismaService.fileTask.deleteMany({
       where: { userTask: { classSubject: { groupClass: { uid: groupClassData.uid } } } },

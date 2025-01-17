@@ -5,18 +5,33 @@ import { PrismaService } from '../prisma.service';
 export class WebsocketPrismaService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async createRoom(where: { emailUser1: string; emailUser2: string }) {
+  async createRoom(where: { emailUser1: string; emailUser2: string; groupClassUid: string }) {
     const expiredAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).setHours(23, 0, 0, 0);
-    const roomData = await this.getMessageAndChatRoom({ emailUser1: where.emailUser1, emailUser2: where.emailUser2 });
+    const roomData = await this.getMessageAndChatRoom({
+      emailUser1: where.emailUser1,
+      emailUser2: where.emailUser2,
+      groupClassUid: where.groupClassUid,
+    });
     return roomData
       ? roomData
       : this.prismaService.roomChat.create({
           data: {
             userA: { connect: { email: where.emailUser1 } },
             userB: { connect: { email: where.emailUser2 } },
+            groupClass: { connect: { uid: where.groupClassUid } },
             expiredAt: new Date(expiredAt),
           },
         });
+  }
+
+  async getRoomChat(where: { emailUser1: string; emailUser2: string; groupClassUid: string }) {
+    return this.prismaService.roomChat.findFirst({
+      where: {
+        userA: { email: where.emailUser1 },
+        userB: { email: where.emailUser2 },
+        groupClass: { uid: where.groupClassUid },
+      },
+    });
   }
 
   async getAllRoomWithExpiredAt() {
@@ -33,6 +48,29 @@ export class WebsocketPrismaService {
     await this.prismaService.messageData.deleteMany({
       where: { roomChat: { id: where.id } },
     });
+  }
+
+  async deleteRoom(where: { emailUser1: string; emailUser2: string; groupClassUid: string }) {
+    const roomData = await this.prismaService.roomChat.findFirst({
+      where: {
+        userA: { email: where.emailUser1 },
+        userB: { email: where.emailUser2 },
+        groupClass: { uid: where.groupClassUid },
+      },
+      select: { id: true },
+    });
+
+    await this.prismaService.messageData.deleteMany({
+      where: {
+        roomChatId: roomData.id,
+      },
+    });
+
+    await this.prismaService.roomChat.delete({
+      where: { id: roomData.id },
+    });
+
+    return roomData;
   }
 
   async addMessage(data: { id: number; emailUser: string; content: string }) {
@@ -52,7 +90,7 @@ export class WebsocketPrismaService {
     });
   }
 
-  async getMessageAndChatRoom(where: { id?: number; emailUser1?: string; emailUser2?: string }) {
+  async getMessageAndChatRoom(where: { emailUser1?: string; emailUser2?: string; groupClassUid?: string }) {
     const orCondition =
       where.emailUser1 && where.emailUser2
         ? [
@@ -63,8 +101,8 @@ export class WebsocketPrismaService {
 
     return this.prismaService.roomChat.findFirst({
       where: {
-        id: where.id,
         OR: orCondition,
+        groupClass: { uid: where.groupClassUid },
       },
       include: {
         messages: {

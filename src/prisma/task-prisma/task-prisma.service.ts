@@ -36,19 +36,19 @@ export class TaskPrismaService {
     );
   }
 
-  async getTask(where: { email: string; classSubject: number }) {
+  async getTask(where: { email: string; classSubjectId: number }) {
     return this.prismaService.userTask.findFirst({
       where: {
         user: { email: where.email },
-        classSubjectId: where.classSubject,
+        classSubjectId: where.classSubjectId,
       },
       include: { fileTask: true },
     });
   }
 
-  async getTaskAll(where: { email: string; classSubject: number }) {
+  async getTaskAll(where: { email: string; classSubjectId: number }) {
     return this.prismaService.userTask.findMany({
-      where: { classSubjectId: where.classSubject },
+      where: { classSubjectId: where.classSubjectId },
       include: {
         fileTask: true,
         classSubject: {
@@ -78,5 +78,9 @@ export class TaskPrismaService {
         userTask: { connect: { id: data.userTaskId } },
       },
     });
+  }
+
+  async deleteUserTask(where: { userEmail: string }) {
+    return this.prismaService.userTask.deleteMany({ where: { user: { email: where.userEmail } } });
   }
 }

@@ -11,8 +11,9 @@ import { WebsocketSelfService } from './websocket-self.service';
 @Injectable()
 @WebSocketGateway(Number(process.env.PORT_WS), { cors: true })
 export class WebsocketSelfGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private readonly websocketSelfService: WebsocketSelfService) {}
+
   private readonly logger = new Logger(WebsocketSelfGateway.name);
-  constructor(private websocketSelfService: WebsocketSelfService) {}
   @WebSocketServer() server: Server;
 
   handleConnection(@ConnectedSocket() socket: Socket) {

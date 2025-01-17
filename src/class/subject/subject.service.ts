@@ -11,8 +11,8 @@ export class SubjectService {
     private readonly taskPrismaService: TaskPrismaService,
   ) {}
 
-  private formatSubjectData({ id, title, description, dueDateAt, maxScore }: classSubject) {
-    return { id, title, description, dueDateAt, maxScore };
+  private formatSubjectData({ id, title, description, dueDateAt, maxScore, status }: classSubject) {
+    return { id, title, description, dueDateAt, maxScore, status };
   }
 
   async getSubjects(uid: string) {
@@ -28,6 +28,8 @@ export class SubjectService {
       groupClass: { uid },
     });
 
+    if (!subjectData) return {};
+
     if (subjectData.groupClass.joinClass.length) {
       subjectData.groupClass.joinClass.forEach(async (userClass) => {
         await this.taskPrismaService.addTask({ email: userClass.userClass.user.email, classSubjectId: subjectData.id });
@@ -38,11 +40,19 @@ export class SubjectService {
   }
 
   async editSubject(title: string, description: string, maxScore: number, dueDate: Date, id: number) {
-    return this.formatSubjectData(await this.subjectPrismaService.editSubject({ id }, { title, description, maxScore, dueDate }));
+    const subjectData = await this.subjectPrismaService.editSubject({ id }, { title, description, maxScore, dueDate });
+
+    if (!subjectData) return {};
+
+    return this.formatSubjectData(subjectData);
   }
 
   async deleteSubject(id: number) {
-    return this.formatSubjectData(await this.subjectPrismaService.deleteSubject({ id }));
+    const subjectData = await this.subjectPrismaService.deleteSubject({ id });
+
+    if (!subjectData) return {};
+
+    return this.formatSubjectData(subjectData);
   }
 
   @Cron('0 0 * * *')

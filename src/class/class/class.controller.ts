@@ -24,19 +24,24 @@ export class ClassController {
         code: HttpStatus.OK,
         success: true,
         message: 'Class retrieved successfully',
-        data: {
-          groupClass: uClassData.map((data) => ({
-            uid: data.groupClass.uid.split('-')[0],
-            day: data.groupClass.day,
-            className: data.groupClass.className,
-            description: data.groupClass.description,
-            ownerData: {
-              email: data.groupClass.owner.email,
-              name: `${data.groupClass.owner.firstName}${data.groupClass.owner.lastName ? ` ${data.groupClass.owner.lastName}` : ''}`,
-              imageUrl: data.groupClass.owner.imageUrl,
-            },
-          })),
-        },
+        data: { groupClass: uClassData },
+      },
+      HttpStatus.OK,
+    );
+  }
+
+  @Get('/:uid/view-users')
+  @ApiOperation({ summary: 'Get all user class by class uid' })
+  @ApiParam({ name: 'uid', type: 'string', description: 'Class UID' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Get user class successfully' })
+  async getUserClass(@Param() params: GetClassDto) {
+    const uClassData = await this.classService.getClassUsers(params.uid);
+    throw new HttpException(
+      {
+        code: HttpStatus.OK,
+        success: true,
+        message: 'User class retrieved successfully',
+        data: { uClassData },
       },
       HttpStatus.OK,
     );
@@ -49,14 +54,16 @@ export class ClassController {
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class creation failed' })
   async addClass(@Body() body: AddClassDto) {
     const { uid, className, description, email, day } = body;
+    const addClass = await this.classService.addGClass(uid, className, description, email, Number(day));
+    const length = Object.keys(addClass).length > 0;
     throw new HttpException(
       {
-        code: HttpStatus.OK,
-        success: true,
-        message: 'Class created successfully',
-        data: await this.classService.addGClass(uid, className, description, email, Number(day)),
+        code: length ? HttpStatus.OK : HttpStatus.CONFLICT,
+        success: length,
+        message: length ? 'Class created successfully' : 'Class creation failed',
+        data: addClass,
       },
-      HttpStatus.OK,
+      length ? HttpStatus.OK : HttpStatus.CONFLICT,
     );
   }
 
@@ -64,16 +71,39 @@ export class ClassController {
   @ApiOperation({ summary: 'Join a class' })
   @ApiBody({ type: JoinClassDto })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class joined successfully' })
+  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class join failed' })
   async joinClass(@Body() body: JoinClassDto) {
     const { uidClass, uidClassUser } = body;
+    const joinClass = await this.classService.joinClass(uidClass, uidClassUser);
+    const length = Object.keys(joinClass).length > 0;
     throw new HttpException(
       {
-        code: HttpStatus.OK,
-        success: true,
-        message: 'Class joined successfully',
-        data: await this.classService.joinClass(uidClass, uidClassUser),
+        code: length ? HttpStatus.OK : HttpStatus.CONFLICT,
+        success: length,
+        message: length ? 'Class joined successfully' : 'Class join failed',
+        data: joinClass,
       },
-      HttpStatus.OK,
+      length ? HttpStatus.OK : HttpStatus.CONFLICT,
+    );
+  }
+
+  @Post('leave')
+  @ApiOperation({ summary: 'Leave a class' })
+  @ApiBody({ type: JoinClassDto })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Class left successfully' })
+  @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class leave failed' })
+  async leaveClass(@Body() body: JoinClassDto) {
+    const { uidClass, uidClassUser } = body;
+    const leaveClass = await this.classService.leaveClass(uidClass, uidClassUser);
+    const length = Object.keys(leaveClass).length > 0;
+    throw new HttpException(
+      {
+        code: length ? HttpStatus.OK : HttpStatus.CONFLICT,
+        success: length,
+        message: length ? 'Class left successfully' : 'Class leave failed',
+        data: leaveClass,
+      },
+      length ? HttpStatus.OK : HttpStatus.CONFLICT,
     );
   }
 
@@ -102,14 +132,16 @@ export class ClassController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Class deleted successfully' })
   @ApiResponse({ status: HttpStatus.CONFLICT, description: 'Class deletion failed' })
   async deleteClass(@Param() params: DeleteClassDto) {
+    const deleteClass = await this.classService.deleteClass(params.uid);
+    const length = Object.keys(deleteClass).length > 0;
     throw new HttpException(
       {
-        code: HttpStatus.OK,
-        success: true,
-        message: 'Class deleted successfully',
-        data: await this.classService.deleteClass(params.uid),
+        code: length ? HttpStatus.OK : HttpStatus.CONFLICT,
+        success: length,
+        message: length ? 'Class deleted successfully' : 'Class deletion failed',
+        data: deleteClass,
       },
-      HttpStatus.OK,
+      length ? HttpStatus.OK : HttpStatus.CONFLICT,
     );
   }
 }
