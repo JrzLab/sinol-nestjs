@@ -4,6 +4,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { AddTaskDto } from 'src/dto/class/task/add-task-dto';
 import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetTaskDto } from 'src/dto/class/task/get-task-dto';
+import { GradeTaskDto } from 'src/dto/class/task/grade-task-dto';
 
 @ApiTags('Task')
 @Controller('class/task')
@@ -68,6 +69,25 @@ export class TaskController {
         data: { uploadData },
       },
       length ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST,
+    );
+  }
+
+  @Post('grade')
+  @ApiOperation({ summary: 'Grade task' })
+  @ApiBody({ type: GradeTaskDto })
+  @ApiResponse({ status: 200, description: 'Task graded successfully' })
+  @ApiResponse({ status: 400, description: 'Task not graded | Task not found' })
+  async gradeTask(@Body() body: GradeTaskDto) {
+    const gradeData = await this.taskService.gradeTask(body.email, Number(body.classSubjectId), Number(body.grade));
+    const length = Object.keys(gradeData).length > 0;
+    throw new HttpException(
+      {
+        code: length ? HttpStatus.OK : HttpStatus.BAD_REQUEST,
+        success: length,
+        message: length ? 'Task graded successfully' : 'Task not graded | Task not found',
+        data: gradeData,
+      },
+      length ? HttpStatus.OK : HttpStatus.BAD_REQUEST,
     );
   }
 

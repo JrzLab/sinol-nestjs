@@ -42,9 +42,9 @@ export class TaskService {
   }
 
   async addTask(email: string, classSubjectId: number, file: Express.Multer.File[]) {
-    const uTaskData = await this.taskPrismaService.getTask({ email, classSubjectId });
+    const uTaskData = await this.getTask(email, classSubjectId);
 
-    if (!uTaskData) return {};
+    if (!Object.keys(uTaskData).length) return {};
 
     const filesName = await this.taskPrismaService.createFileFolder({ email, file });
     const userData = await this.userPrismaService.findUserByIdentifier({ email });
@@ -60,8 +60,16 @@ export class TaskService {
     );
   }
 
-  async updateTask(email: string, classSubject: number, file: Express.Multer.File[]) {
-    const uTaskData = await this.getTask(email, classSubject);
+  async gradeTask(email: string, classSubjectId: number, grade: number) {
+    const uTaskData = await this.getTask(email, classSubjectId);
+
+    if (!Object.keys(uTaskData).length) return {};
+
+    return this.taskPrismaService.gradeTask({ id: uTaskData.id }, { grade });
+  }
+
+  async updateTask(email: string, classSubjectId: number, file: Express.Multer.File[]) {
+    const uTaskData = await this.getTask(email, classSubjectId);
 
     if (!Object.keys(uTaskData).length) return {};
 
@@ -82,6 +90,6 @@ export class TaskService {
       });
     });
 
-    return (await this.getTask(email, classSubject)).fileTask;
+    return (await this.getTask(email, classSubjectId)).fileTask;
   }
 }

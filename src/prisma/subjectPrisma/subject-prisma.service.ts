@@ -6,7 +6,7 @@ import { statusSubject } from '@prisma/client';
 export class SubjectPrismaService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getAllSubject() {
+  async getAllSubjectExp() {
     return this.prismaService.classSubject.findMany({
       where: { dueDateAt: { lte: new Date() } },
       orderBy: { createdAt: 'desc' },
@@ -69,7 +69,16 @@ export class SubjectPrismaService {
       },
     });
 
-    await this.prismaService.userTask.updateMany({ where: { classSubjectId: where.id }, data: { status: 'PENDING' } });
+    const userTasksData = await this.prismaService.userTask.findMany({ where: { classSubjectId: where.id }, include: { fileTask: true } });
+
+    for (const userTask of userTasksData) {
+      if (!userTask.fileTask.length) {
+        await this.prismaService.userTask.update({ where: { id: userTask.id }, data: { status: 'NOT_COLLECTING' } });
+      } else if (userTask.fileTask.length) {
+        await this.prismaService.userTask.update({ where: { id: userTask.id }, data: { status: 'COLLECTING' } });
+      }
+    }
+
     return subjectData;
   }
 
@@ -78,9 +87,9 @@ export class SubjectPrismaService {
 
     for (const userTask of userTasksData) {
       if (!userTask.fileTask.length) {
-        await this.prismaService.userTask.update({ where: { id: userTask.id }, data: { status: 'NOT_COLLECTING' } });
+        await this.prismaService.userTask.update({ where: { id: userTask.id }, data: { status: 'LATE' } });
       } else if (userTask.fileTask.length) {
-        await this.prismaService.userTask.update({ where: { id: userTask.id }, data: { status: 'COMPLATE' } });
+        await this.prismaService.userTask.update({ where: { id: userTask.id }, data: { status: 'COLLECTING' } });
       }
     }
 

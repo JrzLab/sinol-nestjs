@@ -55,9 +55,9 @@ export class SubjectService {
     return this.formatSubjectData(subjectData);
   }
 
-  @Cron('0 0 * * *')
+  @Cron('0 * * * *')
   async handleCron() {
-    const subjectDatas = await this.subjectPrismaService.getAllSubject();
+    const subjectDatas = await this.subjectPrismaService.getAllSubjectExp();
     for (const subjectData of subjectDatas) {
       await this.subjectPrismaService.updateStatusSubject({ id: subjectData.id }, { status: 'CLOSED' });
     }

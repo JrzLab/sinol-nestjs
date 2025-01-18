@@ -66,7 +66,7 @@ model userClass {
 model userTask {
   id             Int          @id @default(autoincrement())
   score          Int          @default(0)
-  status         taskStatus   @default(PENDING)
+  status         taskStatus   @default(NOT_COLLECTING)
   createdAt      DateTime     @default(now())
   editedAt       DateTime     @updatedAt
   user           user         @relation(fields: [userId], references: [id])
@@ -122,8 +122,8 @@ model fileTask {
 
 enum taskStatus {
   NOT_COLLECTING
+  COLLECTING
   LATE
-  PENDING
   COMPLATE
 }
 

@@ -111,7 +111,56 @@ export class WebsocketPrismaService {
             uid: true,
             roomChatId: true,
             senderId: true,
-            sender: { select: { email: true, firstName: true } },
+            sender: { select: { email: true, firstName: true, lastName: true } },
+            content: true,
+            messageTemp: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getMessageDataAdmin(where: { emailUser1: string; groupClassUid: string }) {
+    return this.prismaService.roomChat.findMany({
+      where: {
+        userA: { email: where.emailUser1 },
+        groupClass: { uid: { contains: where.groupClassUid } },
+      },
+      orderBy: { expiredAt: 'desc' },
+      select: {
+        id: true,
+        messages: {
+          select: {
+            sender: { select: { email: true } },
+            content: true,
+            messageTemp: true,
+          },
+          orderBy: { messageTemp: 'desc' },
+        },
+        userB: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+            imageUrl: true,
+          },
+        },
+      },
+    });
+  }
+
+  async getMessageDataById(id: number) {
+    return this.prismaService.roomChat.findMany({
+      where: { id },
+      include: {
+        userB: { select: { email: true, firstName: true, lastName: true, imageUrl: true } },
+        messages: {
+          orderBy: { messageTemp: 'asc' },
+          select: {
+            uid: true,
+            roomChatId: true,
+            senderId: true,
+            sender: { select: { email: true, firstName: true, lastName: true } },
             content: true,
             messageTemp: true,
           },

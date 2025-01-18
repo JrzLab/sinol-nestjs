@@ -70,6 +70,18 @@ export class TaskPrismaService {
     });
   }
 
+  async gradeTask(where: { id: number }, data: { grade: number }) {
+    return this.prismaService.userTask.update({
+      where: {
+        id: where.id,
+      },
+      data: {
+        score: data.grade,
+        status: 'COMPLATE',
+      },
+    });
+  }
+
   async addFileTask(data: { fileName: string; userTaskId: number; url: string }) {
     return this.prismaService.fileTask.create({
       data: {

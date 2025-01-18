@@ -22,6 +22,14 @@ export class SignInService {
       };
     }
 
+    if (userData.password === '') {
+      return {
+        success: false,
+        message: 'Password not set',
+        data: {},
+      };
+    }
+
     const uClassData = await this.authService.addUidUserClass(email);
     const passwordMatch = await this.authService.compareHashText(password, userData.password);
     if (!passwordMatch) {
