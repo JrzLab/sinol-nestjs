@@ -6,7 +6,7 @@ export class SignInDto {
     description: 'Email of the user (either one is required)',
     example: 'user@example.com',
   })
-  @IsString()
+  @IsNotEmpty()
   @IsEmail()
   email: string;
 

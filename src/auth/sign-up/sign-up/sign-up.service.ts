@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import { Injectable } from '@nestjs/common';
 import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 import { AuthService } from 'src/auth/auth.service';
-import { SignUpDto } from 'src/dto/auth/sign-up-dto';
 import { user } from '@prisma/client';
 
 @Injectable()
@@ -17,9 +16,7 @@ export class SignUpService {
     if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
   };
 
-  async createUser(body: SignUpDto) {
-    const { email, password, firstName } = body;
-
+  async createUser(email: string, password: string, firstName: string) {
     const userExists = await this.userPrismaService.findUserByIdentifier({ email });
     if (userExists) {
       const emailExists = userExists.email.toLowerCase() === email.toLowerCase();

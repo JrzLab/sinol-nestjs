@@ -14,7 +14,7 @@ export class SigninGoogleController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Sign in with Google successfully' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Sign in with Google failed' })
   async signinGoogle(@Body() body: SigninGoogleDto) {
-    const { email, firstName } = body;
+    const { email, firstName, lastName, imageUrl } = body;
 
     if (!email || !firstName) {
       throw new HttpException(
@@ -28,7 +28,7 @@ export class SigninGoogleController {
       );
     }
 
-    const result = await this.signinGoogleService.fetchOrCreateUsers(body);
+    const result = await this.signinGoogleService.fetchOrCreateUsers(email, firstName, lastName, imageUrl);
 
     if (result.success) {
       throw new HttpException(

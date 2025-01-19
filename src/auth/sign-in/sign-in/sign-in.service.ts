@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
-import { SignInDto } from 'src/dto/auth/sign-in-dto';
 import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 
 @Injectable()
@@ -10,9 +9,7 @@ export class SignInService {
     private readonly authService: AuthService,
   ) {}
 
-  async loginUsers(body: SignInDto) {
-    const { email, password } = body;
-
+  async loginUsers(email: string, password: string) {
     const userData = await this.userService.findUserByIdentifier({ email });
     if (!userData) {
       return {

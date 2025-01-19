@@ -3,7 +3,6 @@ import * as https from 'https';
 import * as sharp from 'sharp';
 import { Injectable } from '@nestjs/common';
 import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
-import { ISigninGoogle } from 'src/utility/interfaces/interface-auth';
 import { user } from '@prisma/client';
 import { AuthService } from 'src/auth/auth.service';
 
@@ -33,8 +32,7 @@ export class SigninGoogleService {
     return `/file/${userData.id}/profile.webp?download=0`;
   }
 
-  async fetchOrCreateUsers(data: ISigninGoogle) {
-    const { email, firstName, lastName, imageUrl } = data;
+  async fetchOrCreateUsers(email: string, firstName: string, lastName: string | null, imageUrl: string | null) {
     if (!email || !firstName) {
       return { success: false, message: 'Email and First Name are required', data: {} };
     }

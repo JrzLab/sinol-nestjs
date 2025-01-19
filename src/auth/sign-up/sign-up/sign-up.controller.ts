@@ -28,7 +28,7 @@ export class SignUpController {
       );
     }
 
-    const userData = await this.signUpService.createUser(body);
+    const userData = await this.signUpService.createUser(email, password, firstName);
 
     if (userData.success) {
       throw new HttpException(

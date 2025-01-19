@@ -16,7 +16,7 @@ export class VerifyTokenResetPassController {
   async verifyTokenResetPass(@Body() body: VerifyTokenResetPassDto) {
     const { token, email } = body;
 
-    if (!token || !email) {
+    if ( !email || !token) {
       throw new HttpException(
         {
           code: HttpStatus.BAD_REQUEST,
@@ -28,7 +28,7 @@ export class VerifyTokenResetPassController {
       );
     }
 
-    const response = await this.verifyTokenResetPassService.verifyToken({ email, token });
+    const response = await this.verifyTokenResetPassService.verifyToken(email, token);
 
     if (response.success) {
       throw new HttpException(

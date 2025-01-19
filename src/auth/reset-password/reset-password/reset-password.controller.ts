@@ -1,7 +1,6 @@
 import { Body, Controller, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { ResetPasswordService } from './reset-password.service';
-import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 import { AuthService } from 'src/auth/auth.service';
 import { ResetPasswordDto } from 'src/dto/auth/reset-password-dto';
 
@@ -10,7 +9,6 @@ import { ResetPasswordDto } from 'src/dto/auth/reset-password-dto';
 export class ResetPasswordController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserPrismaService,
     private readonly resetPasswordService: ResetPasswordService,
   ) {}
 
@@ -18,6 +16,8 @@ export class ResetPasswordController {
   @ApiOperation({ summary: 'Reset Password' })
   @ApiBody({ type: ResetPasswordDto })
   @ApiResponse({ status: HttpStatus.OK, description: 'Password reset successfully' })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Email is required' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid token' })
   async resetPassword(@Body() body: ResetPasswordDto) {
     const { email, password, token } = body;
@@ -33,21 +33,19 @@ export class ResetPasswordController {
       );
     }
 
-    const verifyToken = await this.resetPasswordService.verifyToken({ email, token });
+    const verifyToken = await this.resetPasswordService.verifyToken(email, token);
     if (verifyToken.success) {
-      const hashPassword = await this.authService.hashText(password);
-      const responseData = await this.userService.changePassword({ email }, { password: hashPassword });
-      if (responseData.password === hashPassword) {
-        throw new HttpException(
-          {
-            code: HttpStatus.OK,
-            success: true,
-            message: verifyToken.message,
-            data: {},
-          },
-          HttpStatus.OK,
-        );
-      }
+      const responseData = await this.resetPasswordService.changePassword(email, await this.authService.hashText(password));
+      const length = Object.keys(responseData).length > 0;
+      throw new HttpException(
+        {
+          code: length ? HttpStatus.OK : HttpStatus.NOT_FOUND,
+          success: length,
+          message: length ? 'Password reset successfully' : 'User not found',
+          data: responseData,
+        },
+        length ? HttpStatus.OK : HttpStatus.NOT_FOUND,
+      );
     }
 
     throw new HttpException(

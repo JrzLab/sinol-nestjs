@@ -29,5 +29,5 @@ export class SigninGoogleDto {
     description: 'The image url of the user',
     example: 'https://example.com/image.jpg / path/to/image.jpg',
   })
-  imageUrl: string;
+  imageUrl?: string | null;
 }

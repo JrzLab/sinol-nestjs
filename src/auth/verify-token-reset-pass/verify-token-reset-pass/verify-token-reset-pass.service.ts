@@ -2,19 +2,17 @@ import { Injectable, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserPrismaService } from 'src/prisma/userPrisma/user-prisma.service';
 import { AuthService } from 'src/auth/auth.service';
-import { IToken, IVerifyToken } from 'src/utility/interfaces/interface-auth';
+import { IToken } from 'src/utility/interfaces/interface-auth';
 
 @Injectable()
 export class VerifyTokenResetPassService {
   constructor(
-    private readonly userService: UserPrismaService,
     private readonly jwtService: JwtService,
     private readonly authService: AuthService,
+    private readonly userPrismaService: UserPrismaService,
   ) {}
 
-  async verifyToken(data: IVerifyToken) {
-    const { email, token } = data;
-
+  async verifyToken(email: string, token: string) {
     if (!email || !token) {
       return {
         code: HttpStatus.BAD_REQUEST,
@@ -25,7 +23,7 @@ export class VerifyTokenResetPassService {
     }
 
     try {
-      const userData = await this.userService.findUserByIdentifier({ email });
+      const userData = await this.userPrismaService.findUserByIdentifier({ email });
 
       if (!userData) {
         return {

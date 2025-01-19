@@ -22,8 +22,3 @@ export interface ISigninGoogle {
   lastName?: string | null;
   imageUrl?: string | null;
 }
-
-export interface IVerifyToken {
-  email: string;
-  token: string;
-}

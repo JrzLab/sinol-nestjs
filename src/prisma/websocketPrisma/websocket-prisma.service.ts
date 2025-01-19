@@ -60,6 +60,8 @@ export class WebsocketPrismaService {
       select: { id: true },
     });
 
+    if (!roomData) return null;
+    
     await this.prismaService.messageData.deleteMany({
       where: {
         roomChatId: roomData.id,

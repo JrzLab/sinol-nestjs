@@ -17,7 +17,7 @@ export class SignInController {
   async loginUser(@Body() body: SignInDto) {
     const { email, password } = body;
 
-    if (!password || !email) {
+    if (!email || !password) {
       throw new HttpException(
         {
           code: HttpStatus.BAD_REQUEST,
@@ -29,7 +29,7 @@ export class SignInController {
       );
     }
 
-    const result = await this.signInService.loginUsers(body);
+    const result = await this.signInService.loginUsers(email, password);
 
     if (result.success) {
       throw new HttpException(

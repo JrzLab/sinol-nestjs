@@ -10,9 +10,9 @@ import { RequestResetPassDto } from 'src/dto/auth/request-reset-pass-dto';
 @Controller('auth/request-reset-pass')
 export class RequestResetPassController {
   constructor(
-    private readonly userService: UserPrismaService,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
+    private readonly userPrismaService: UserPrismaService,
     private readonly requestResetPasswordService: RequestResetPassService,
   ) {}
 
@@ -23,7 +23,7 @@ export class RequestResetPassController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
   async requestResetPass(@Body() body: RequestResetPassDto) {
     const { email } = body;
-    const userData = await this.userService.findUserByIdentifier({ email });
+    const userData = await this.userPrismaService.findUserByIdentifier({ email });
     if (!userData) {
       throw new HttpException(
         {
