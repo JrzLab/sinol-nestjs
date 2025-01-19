@@ -34,7 +34,9 @@ export class TaskService {
       data: isOwner
         ? allTaskData.map((task) => ({
             username: `${task.user.firstName}${task.user.lastName ? ` ${task.user.lastName}` : ''}`,
+            email: task.user.email,
             status: task.status,
+            editedAt: task.editedAt,
             fileTask: task.fileTask,
           }))
         : {},

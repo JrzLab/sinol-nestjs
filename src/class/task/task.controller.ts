@@ -46,7 +46,9 @@ export class TaskController {
         code: condition ? HttpStatus.OK : Object.keys(allTaskData.data).length ? HttpStatus.FORBIDDEN : HttpStatus.NOT_FOUND,
         success: condition,
         message: allTaskData.message,
-        data: allTaskData.data,
+        data: {
+          allTaskData: allTaskData.data,
+        },
       },
       condition ? HttpStatus.OK : Object.keys(allTaskData.data).length ? HttpStatus.FORBIDDEN : HttpStatus.NOT_FOUND,
     );

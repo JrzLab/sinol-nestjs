@@ -56,7 +56,7 @@ export class TaskPrismaService {
             groupClass: { select: { owner: { select: { email: true } } } },
           },
         },
-        user: { select: { firstName: true, lastName: true } },
+        user: { select: { firstName: true, lastName: true, email: true } },
       },
     });
   }
@@ -83,6 +83,15 @@ export class TaskPrismaService {
   }
 
   async addFileTask(data: { fileName: string; userTaskId: number; url: string }) {
+    await this.prismaService.userTask.update({
+      where: {
+        id: data.userTaskId,
+      },
+      data: {
+        status: 'COLLECTING',
+      },
+    });
+
     return this.prismaService.fileTask.create({
       data: {
         fileName: data.fileName,
